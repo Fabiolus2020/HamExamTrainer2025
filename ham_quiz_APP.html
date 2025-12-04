@@ -1,0 +1,1183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Amateur Radio Exam Practice</title>
+<style>
+body {
+font-family: Arial, sans-serif;
+max-width: 800px;
+margin: 20px auto;
+padding: 10px;
+line-height: 1.5;
+}
+h1 {
+text-align: center;
+}
+.card {
+border: 1px solid #ccc;
+border-radius: 8px;
+padding: 16px;
+margin-top: 16px;
+box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+}
+.controls {
+margin-top: 10px;
+display: flex;
+gap: 10px;
+flex-wrap: wrap;
+}
+button {
+padding: 8px 14px;
+border-radius: 6px;
+border: 1px solid #888;
+background: #f2f2f2;
+cursor: pointer;
+font-size: 14px;
+}
+button:disabled {
+opacity: 0.6;
+cursor: not-allowed;
+}
+#status {
+margin-top: 8px;
+font-size: 0.95rem;
+color: #555;
+}
+#bankQuestionId {
+font-weight: bold;
+margin-bottom: 4px;
+color: #333;
+}
+#questionText {
+font-weight: bold;
+margin-bottom: 10px;
+}
+.option-label {
+display: block;
+margin-bottom: 6px;
+padding: 4px 6px;
+border-radius: 4px;
+transition: background 0.2s;
+}
+.option-label.correct {
+background: #d6f5d6;
+}
+.option-label.incorrect {
+background: #ffd6d6;
+}
+#feedback {
+margin-top: 10px;
+font-weight: bold;
+}
+#feedback.correct {
+color: #1c7c1c;
+}
+#feedback.incorrect {
+color: #b00000;
+}
+#explanation {
+margin-top: 6px;
+font-style: italic;
+color: #444;
+/* Show \n as real line breaks */
+white-space: pre-line;
+}
+#score {
+margin-top: 10px;
+font-size: 0.95rem;
+}
+#wrongInfo {
+font-size: 0.9rem;
+color: #555;
+}
+</style>
+</head>
+<body>
+<h1>Amateur Radio Exam Practice</h1>
+
+
+<div class="card">
+  <p><strong>Step 1:</strong> Load the official ISED Basic question bank file
+    <code>amat_basic_quest_delim.txt</code> or a compatible CSV file.</p>
+  <p><strong>Step 2:</strong> Choose your preferred language (English or Français).</p>
+  <p><strong>Step 3:</strong> Select the question mode (Random, No repeats, or Exam 100-question subset).</p>
+  <p><strong>Step 4:</strong> Click &quot;Next Question&quot; to start the quiz.</p>
+
+  <p><strong>Language:</strong>
+    <label style="margin-left:8px;">
+      <input type="radio" name="language" id="langEn" value="en" checked> English
+    </label>
+    <label style="margin-left:10px;">
+      <input type="radio" name="language" id="langFr" value="fr"> Français
+    </label>
+  </p>
+
+  <input type="file" id="fileInput" accept=".txt,.csv">
+  <div id="status">No file loaded.</div>
+
+  <div id="modeControls" style="margin-top:8px;">
+    <strong>Question mode:</strong>
+    <label><input type="radio" name="mode" id="modeRandom" value="random" checked> Random</label>
+    <label style="margin-left: 10px;"><input type="radio" name="mode" id="modeNoRepeat" value="norepeat"> No repeats until all questions used</label>
+    <label style="margin-left: 10px;"><input type="radio" name="mode" id="modeExam" value="exam"> <span id="examLabelText">Exam (official structure: 100 questions)</span></label>
+  </div>
+
+  <div id="profileIndicator" style="margin-top:6px; font-size:0.9rem; color:#333;">
+    Profile: Not detected yet.
+  </div>
+</div>
+
+<div class="card" id="quizCard" style="display:none;">
+<div id="questionHeader">
+<span id="questionCounter"></span>
+</div>
+<div id="bankQuestionId"></div>
+<div id="questionText"></div>
+<form id="optionsForm">
+<div id="options"></div>
+</form>
+
+<div id="feedback"></div>
+<div id="explanation"></div>
+
+<div class="controls">
+<button id="checkBtn">Check Answer</button>
+<button id="nextBtn" disabled>Next Question</button>
+</div>
+
+<div id="score"></div>
+<div id="categoryReport"></div>
+</div>
+
+<div class="card" id="wrongCard" style="display:none;">
+<h3>Wrong Questions Tracker</h3>
+<p id="wrongInfo">You haven’t missed any questions yet.</p>
+<button id="downloadWrongBtn" disabled>Download wrong questions CSV</button>
+</div>
+
+
+<script>
+// ===============================
+// Amateur Radio Exam Practice App
+// Now supports:
+// - Official ISED bilingual file: amat_basic_quest_delim.txt
+// - Existing CSV banks (vertical or horizontal)
+// - Language toggle: English / Français
+// ===============================
+
+// Data structure for each question:
+// {
+//   bankID,
+//   category,           // "001".."008" if BankQuestionID present
+//   bilingual: true/false,
+//   question_en,
+//   question_fr,        // may be null
+//   options_en: [4],
+//   options_fr: [4] | null,
+//   correctIndex: 0..3,
+//   explanation: string,
+//   raw: { ... }        // used for wrong-question export
+// }
+
+let questions = [];
+let currentQuestionIndex = null;
+let totalAsked = 0;
+let totalCorrect = 0;
+
+let wrongQuestions = []; // raw objects
+
+// Category definitions (from ISED exam structure)
+
+// Basic exam categories
+const CATEGORY_INFO_BASIC = {
+  '001': 'Regulations and Policies',
+  '002': 'Operating and Procedures',
+  '003': 'Station Assembly, Practice and Safety',
+  '004': 'Circuit Components',
+  '005': 'Basic Electronics and Theory',
+  '006': 'Feedlines and Antenna Systems',
+  '007': 'Radio Wave Propagation',
+  '008': 'Interference and Suppression'
+};
+
+// Advanced exam categories
+const CATEGORY_INFO_ADVANCED = {
+  '001': 'Advanced Theory',
+  '002': 'Advanced Components and Circuits',
+  '003': 'Measurements',
+  '004': 'Power Supplies',
+  '005': 'Transmitters, Modulation and Processing',
+  '006': 'Receivers',
+  '007': 'Feedlines - Matching and Antenna Systems'
+};
+
+// Active category mapping (defaults to Basic)
+let CATEGORY_INFO = CATEGORY_INFO_BASIC;
+
+// Per-exam category statistics
+let categoryStats = {};
+
+// Active exam distribution and target question count.
+// These are chosen automatically based on the loaded bank (Basic vs Advanced).
+let activeExamDistribution = null;
+let examQuestionTarget = 100;
+
+// Language toggle
+let currentLanguage = 'en'; // 'en' or 'fr'
+
+const fileInput = document.getElementById('fileInput');
+const statusEl = document.getElementById('status');
+const profileIndicatorEl = document.getElementById('profileIndicator');
+const examLabelTextEl = document.getElementById('examLabelText');
+const quizCard = document.getElementById('quizCard');
+const bankQuestionIdEl = document.getElementById('bankQuestionId');
+const questionTextEl = document.getElementById('questionText');
+const optionsEl = document.getElementById('options');
+const optionsForm = document.getElementById('optionsForm');
+const feedbackEl = document.getElementById('feedback');
+const explanationEl = document.getElementById('explanation');
+const questionCounterEl = document.getElementById('questionCounter');
+const scoreEl = document.getElementById('score');
+const checkBtn = document.getElementById('checkBtn');
+const nextBtn = document.getElementById('nextBtn');
+const modeRandomRadio = document.getElementById('modeRandom');
+const modeNoRepeatRadio = document.getElementById('modeNoRepeat');
+const modeExamRadio = document.getElementById('modeExam');
+const wrongCard = document.getElementById('wrongCard');
+const wrongInfoEl = document.getElementById('wrongInfo');
+const downloadWrongBtn = document.getElementById('downloadWrongBtn');
+const categoryReportEl = document.getElementById('categoryReport');
+const langEnRadio = document.getElementById('langEn');
+const langFrRadio = document.getElementById('langFr');
+
+let selectionMode = 'random';
+let questionSequence = [];
+let questionSequencePosition = 0;
+
+// --- Language toggle handlers ---
+if (langEnRadio && langFrRadio) {
+  langEnRadio.addEventListener('change', () => {
+    if (langEnRadio.checked) {
+      currentLanguage = 'en';
+      refreshCurrentQuestionLanguage();
+    }
+  });
+  langFrRadio.addEventListener('change', () => {
+    if (langFrRadio.checked) {
+      currentLanguage = 'fr';
+      refreshCurrentQuestionLanguage();
+    }
+  });
+}
+
+function refreshCurrentQuestionLanguage() {
+  if (currentQuestionIndex === null || questions.length === 0) return;
+  // Re-render current question using the new language,
+  // but without changing which question is being asked.
+  renderQuestion(questions[currentQuestionIndex]);
+}
+
+modeRandomRadio.addEventListener('change', () => {
+  if (modeRandomRadio.checked) {
+    selectionMode = 'random';
+  }
+});
+
+modeNoRepeatRadio.addEventListener('change', () => {
+  if (modeNoRepeatRadio.checked) {
+    selectionMode = 'norepeat';
+    resetQuestionSequence();
+  }
+});
+
+modeExamRadio.addEventListener('change', () => {
+  if (modeExamRadio.checked) {
+    selectionMode = 'exam';
+    // Reset stats for a fresh exam session
+    totalAsked = 0;
+    totalCorrect = 0;
+    wrongQuestions = [];
+    updateScore();
+    updateWrongInfo();
+    resetQuestionSequence();
+    if (categoryReportEl) {
+      categoryReportEl.innerHTML = '';
+    }
+    statusEl.textContent = `Exam mode: fixed ${examQuestionTarget}-question subset with official category distribution.`;
+    nextBtn.disabled = false;
+  }
+});
+
+fileInput.addEventListener('change', handleFileSelect);
+checkBtn.addEventListener('click', handleCheckAnswer);
+nextBtn.addEventListener('click', showNextQuestion);
+downloadWrongBtn.addEventListener('click', downloadWrongQuestionsCsv);
+
+// =====================
+// Generic CSV parser
+// (supports quotes, commas, newlines in fields)
+// =====================
+function parseCsvText(text, delimiter) {
+  delimiter = delimiter || ',';
+  const rows = [];
+  let row = [];
+  let field = '';
+  let inQuotes = false;
+
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+
+    if (inQuotes) {
+      if (ch === '"') {
+        // Escaped quote?
+        if (i + 1 < text.length && text[i + 1] === '"') {
+          field += '"';
+          i++;
+        } else {
+          inQuotes = false;
+        }
+      } else {
+        field += ch;
+      }
+    } else {
+      if (ch === '"') {
+        inQuotes = true;
+      } else if (ch === delimiter) {
+        row.push(field);
+        field = '';
+      } else if (ch === '\r' || ch === '\n') {
+        row.push(field);
+        field = '';
+        if (row.some(cell => cell.trim() !== '')) {
+          rows.push(row);
+        }
+        row = [];
+        if (ch === '\r' && i + 1 < text.length && text[i + 1] === '\n') {
+          i++;
+        }
+      } else {
+        field += ch;
+      }
+    }
+  }
+  if (field.length > 0 || row.length > 0) {
+    row.push(field);
+    if (row.some(cell => cell.trim() !== '')) {
+      rows.push(row);
+    }
+  }
+  return rows;
+}
+
+// =====================
+// File handling
+// =====================
+function handleFileSelect(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const text = e.target.result;
+    try {
+      // Decide format based on first non-empty line
+      const firstLine = (text.split(/\r?\n/).find(l => l.trim().length > 0) || '').toLowerCase();
+      if (firstLine.startsWith('question_id')) {
+        // Official ISED bilingual file (.txt)
+        questions = parseOfficialDelimToQuestions(text);
+        statusEl.textContent = `Loaded official ISED bank: ${questions.length} questions (bilingual).`;
+      } else {
+        // Fallback: existing CSV parser
+        questions = parseCsvToQuestions(text);
+        statusEl.textContent = `Loaded CSV bank: ${questions.length} questions.`;
+      }
+
+      // Configure exam profile (Basic vs Advanced) based on BankQuestionID patterns
+      configureExamProfile();
+
+      if (questions.length === 0) {
+        statusEl.textContent = 'No valid questions found in the file. Check the format.';
+        quizCard.style.display = 'none';
+        wrongCard.style.display = 'none';
+      } else {
+        quizCard.style.display = 'block';
+        wrongCard.style.display = 'block';
+
+        totalAsked = 0;
+        totalCorrect = 0;
+        wrongQuestions = [];
+        updateScore();
+        updateWrongInfo();
+
+        resetQuestionSequence();
+        resetFeedback();
+        clearQuestion();
+        nextBtn.disabled = false;
+        checkBtn.disabled = true;
+
+        // If the bank is purely English, force English language
+        const anyFrench = questions.some(q => q.question_fr && q.question_fr.trim() !== '');
+        langFrRadio.disabled = !anyFrench;
+        if (!anyFrench) {
+          currentLanguage = 'en';
+          if (langEnRadio) langEnRadio.checked = true;
+          if (langFrRadio) langFrRadio.checked = false;
+        }
+      }
+    } catch (err) {
+      console.error(err);
+      statusEl.textContent = 'Error reading the file. Check the format and try again.';
+      quizCard.style.display = 'none';
+      wrongCard.style.display = 'none';
+    }
+  };
+  reader.readAsText(file);
+}
+
+// =====================
+// Parse official ISED bilingual file (amat_basic_quest_delim.txt)
+// =====================
+function parseOfficialDelimToQuestions(text) {
+  const lines = text.split(/\r?\n/);
+  const result = [];
+  let headerProcessed = false;
+
+  for (let line of lines) {
+    if (!line || line.trim().length === 0) continue;
+    if (!headerProcessed) {
+      headerProcessed = true; // skip header row
+      continue;
+    }
+    const cells = line.split(';');
+    if (cells.length < 11) continue;
+
+    const id = (cells[0] || '').trim();
+    const q_en = (cells[1] || '').trim();
+    const corr_en = (cells[2] || '').trim();
+    const w1_en = (cells[3] || '').trim();
+    const w2_en = (cells[4] || '').trim();
+    const w3_en = (cells[5] || '').trim();
+    const q_fr = (cells[6] || '').trim();
+    const corr_fr = (cells[7] || '').trim();
+    const w1_fr = (cells[8] || '').trim();
+    const w2_fr = (cells[9] || '').trim();
+    const w3_fr = (cells[10] || '').trim();
+
+    if (!q_en || !corr_en) continue;
+
+    const answers = [
+      { en: corr_en, fr: corr_fr, isCorrect: true },
+      { en: w1_en, fr: w1_fr, isCorrect: false },
+      { en: w2_en, fr: w2_fr, isCorrect: false },
+      { en: w3_en, fr: w3_fr, isCorrect: false }
+    ];
+
+    // Shuffle answers but keep English/French paired
+    const order = [0, 1, 2, 3];
+    for (let i = order.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      const tmp = order[i];
+      order[i] = order[j];
+      order[j] = tmp;
+    }
+
+    const options_en = [];
+    const options_fr = [];
+    let correctIndex = null;
+
+    for (let i = 0; i < 4; i++) {
+      const ans = answers[order[i]];
+      options_en[i] = ans.en;
+      options_fr[i] = ans.fr || ans.en; // if French missing, fall back to English
+      if (ans.isCorrect) {
+        correctIndex = i;
+      }
+    }
+
+    if (correctIndex === null) continue;
+
+    const category = getCategoryFromBankID(id);
+
+    const q = {
+      bankID: id,
+      category: category,
+      bilingual: true,
+      question_en: q_en,
+      question_fr: q_fr || '',
+      options_en: options_en,
+      options_fr: options_fr,
+      correctIndex: correctIndex,
+      explanation: '', // official bank has no explanation text
+      question: q_en, // backward compatibility
+      options: options_en.slice(),
+      raw: {
+        bankID: id,
+        category: category,
+        question: q_en,
+        optionA: options_en[0],
+        optionB: options_en[1],
+        optionC: options_en[2],
+        optionD: options_en[3],
+        correctLetter: indexToLetter(correctIndex),
+        explanation: ''
+      }
+    };
+
+    result.push(q);
+  }
+  return result;
+}
+
+// =====================
+// Existing CSV parsing (unchanged logic, but extended to fill *_en fields)
+// =====================
+function parseCsvToQuestions(csvText) {
+  const rows = parseCsvText(csvText, ',');
+  const result = [];
+  if (!rows.length) return result;
+
+  const firstRow = rows[0];
+  const firstCell = (firstRow[0] || '').trim().toLowerCase();
+
+  const isVerticalFormat = firstRow.length >= 2 && firstCell === 'column';
+
+  if (isVerticalFormat) {
+    return parseVerticalQuestions(rows);
+  }
+
+  // Horizontal format: one row per question
+  let startIndex = 0;
+  if (firstCell.includes('question')) {
+    startIndex = 1; // skip header row
+  }
+
+  for (let i = startIndex; i < rows.length; i++) {
+    const cells = rows[i];
+    if (!cells || cells.length < 6) continue;
+
+    const question = (cells[0] || '').trim();
+    const optionA = (cells[1] || '').trim();
+    const optionB = (cells[2] || '').trim();
+    const optionC = (cells[3] || '').trim();
+    const optionD = (cells[4] || '').trim();
+    const correct = (cells[5] || '').trim();
+    const explanation = cells[6] ? cells[6].toString() : '';
+
+    // Optional BankQuestionID (column 8)
+    const bankID = cells[7] ? cells[7].toString().trim() : '';
+
+    if (!question || !optionA || !optionB || !optionC || !optionD || !correct) {
+      continue;
+    }
+
+    const correctIndex = letterToIndex(correct);
+    if (correctIndex === null) continue;
+    const correctLetter = indexToLetter(correctIndex);
+
+    const category = getCategoryFromBankID(bankID);
+
+    const q = {
+      bankID: bankID,
+      category: category,
+      bilingual: false,
+      question_en: question,
+      question_fr: '',
+      options_en: [optionA, optionB, optionC, optionD],
+      options_fr: null,
+      correctIndex: correctIndex,
+      explanation: explanation,
+      question: question,
+      options: [optionA, optionB, optionC, optionD],
+      raw: {
+        bankID: bankID,
+        category: category,
+        question: question,
+        optionA: optionA,
+        optionB: optionB,
+        optionC: optionC,
+        optionD: optionD,
+        correctLetter: correctLetter,
+        explanation: explanation
+      }
+    };
+
+    result.push(q);
+  }
+
+  return result;
+}
+
+// Extract category code (001–008) from BankQuestionID like "B-001-001-002"
+function getCategoryFromBankID(bankId) {
+  if (!bankId) return null;
+  const m = bankId.match(/^[AB]-(\d{3})-/);
+  return m ? m[1] : null;
+}
+
+
+// Exam distribution definitions for Basic and Advanced banks
+const EXAM_DISTRIBUTION_BASIC = {
+  '001': 25,
+  '002': 9,
+  '003': 21,
+  '004': 6,
+  '005': 13,
+  '006': 13,
+  '007': 8,
+  '008': 5
+};
+
+const EXAM_DISTRIBUTION_ADVANCED = {
+  '001': 5,   // Advanced Theory
+  '002': 12,  // Advanced Components and Circuits
+  '003': 6,   // Measurements
+  '004': 4,   // Power Supplies
+  '005': 9,   // Transmitters, Modulation and Processing
+  '006': 5,   // Receivers
+  '007': 9    // Feedlines - Matching and Antenna Systems
+};
+
+// Decide whether the loaded bank looks like Basic or Advanced,
+// and configure CATEGORY_INFO and exam distribution accordingly.
+function configureExamProfile() {
+  let hasBasic = false;
+  let hasAdvanced = false;
+
+  for (const q of questions) {
+    if (!q || !q.bankID) continue;
+    if (/^B-\d{3}-/.test(q.bankID)) hasBasic = true;
+    if (/^A-\d{3}-/.test(q.bankID)) hasAdvanced = true;
+  }
+
+  let profileName = 'Basic';
+
+  if (hasAdvanced && !hasBasic) {
+    // Advanced-only bank
+    CATEGORY_INFO = CATEGORY_INFO_ADVANCED;
+    activeExamDistribution = EXAM_DISTRIBUTION_ADVANCED;
+    profileName = 'Advanced';
+  } else {
+    // Default to Basic mapping
+    CATEGORY_INFO = CATEGORY_INFO_BASIC;
+    activeExamDistribution = EXAM_DISTRIBUTION_BASIC;
+    profileName = 'Basic';
+  }
+
+  // Target number of questions in an exam is the sum of the active distribution.
+  if (activeExamDistribution) {
+    examQuestionTarget = Object.values(activeExamDistribution).reduce((sum, n) => sum + n, 0);
+  } else {
+    examQuestionTarget = 100;
+  }
+
+  // Update UI indicators if elements exist
+  if (profileIndicatorEl) {
+    profileIndicatorEl.textContent = `Profile: ${profileName} (official structure: ${examQuestionTarget} questions)`;
+  }
+  if (examLabelTextEl) {
+    examLabelTextEl.textContent = `Exam (official structure: ${examQuestionTarget} questions)`;
+  }
+}
+
+// Vertical format: header row "Column,Example", then key/value rows
+// Vertical format: header row "Column,Example", then key/value rows
+function parseVerticalQuestions(rows) {
+  const result = [];
+  let current = null;
+
+  function pushCurrent() {
+    if (!current) return;
+    if (!current.question || !current.optionA || !current.optionB ||
+        !current.optionC || !current.optionD || !current.correctLetter) {
+      return;
+    }
+    const correctIndex = letterToIndex(current.correctLetter);
+    if (correctIndex === null) return;
+
+    const bankID = current.bankID ? current.bankID.trim() : '';
+    const category = getCategoryFromBankID(bankID);
+
+    const options_en = [
+      current.optionA,
+      current.optionB,
+      current.optionC,
+      current.optionD
+    ];
+
+    const q = {
+      bankID: bankID,
+      category: category,
+      bilingual: false,
+      question_en: current.question,
+      question_fr: '',
+      options_en: options_en,
+      options_fr: null,
+      correctIndex: correctIndex,
+      explanation: current.explanation || '',
+      question: current.question,
+      options: options_en.slice(),
+      raw: {
+        bankID: bankID,
+        category: category,
+        question: current.question,
+        optionA: current.optionA,
+        optionB: current.optionB,
+        optionC: current.optionC,
+        optionD: current.optionD,
+        correctLetter: indexToLetter(correctIndex),
+        explanation: current.explanation || ''
+      }
+    };
+    result.push(q);
+  }
+
+  for (let i = 1; i < rows.length; i++) {
+    const row = rows[i];
+    if (!row || row.length < 2) continue;
+
+    const key = (row[0] || '').trim();
+    const value = (row[1] || '').toString();
+
+    if (!key) continue;
+
+    const keyLower = key.toLowerCase();
+    if (keyLower === 'question') {
+      if (current) pushCurrent();
+      current = {
+        bankID: '',
+        question: value.trim(),
+        optionA: '',
+        optionB: '',
+        optionC: '',
+        optionD: '',
+        correctLetter: '',
+        explanation: ''
+      };
+    } else if (current) {
+      if (keyLower === 'optiona') current.optionA = value.trim();
+      else if (keyLower === 'optionb') current.optionB = value.trim();
+      else if (keyLower === 'optionc') current.optionC = value.trim();
+      else if (keyLower === 'optiond') current.optionD = value.trim();
+      else if (keyLower === 'correctoption') current.correctLetter = value.trim();
+      else if (keyLower === 'explanation') current.explanation = value;
+      else if (keyLower === 'bankquestionid') current.bankID = value.trim();
+    }
+  }
+
+  if (current) pushCurrent();
+  return result;
+}
+
+function letterToIndex(letter) {
+  const l = letter.toString().trim().toUpperCase();
+  if (l === 'A') return 0;
+  if (l === 'B') return 1;
+  if (l === 'C') return 2;
+  if (l === 'D') return 3;
+  const num = parseInt(l, 10);
+  if (!isNaN(num) && num >= 0 && num <= 3) return num;
+  return null;
+}
+
+function indexToLetter(index) {
+  return String.fromCharCode(65 + index);
+}
+
+// Prepare shuffled sequence of question indices for no-repeat or exam mode
+function resetQuestionSequence() {
+  questionSequence = [];
+  questionSequencePosition = 0;
+  if (selectionMode !== 'norepeat' && selectionMode !== 'exam') return;
+  if (!questions || questions.length === 0) return;
+
+  const indices = [];
+  for (let i = 0; i < questions.length; i++) {
+    indices.push(i);
+  }
+  for (let i = indices.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    const tmp = indices[i];
+    indices[i] = indices[j];
+    indices[j] = tmp;
+  }
+
+  if (selectionMode === 'exam') {
+    // We want fixed distribution across categories (like ISED exam)
+    questionSequence = buildExamSequence(indices);
+    resetCategoryStatsForExam();
+  } else {
+    questionSequence = indices;
+  }
+}
+
+// Build an exam sequence using the active exam distribution (Basic or Advanced)
+function buildExamSequence(allIndices) {
+  const requiredPerCategory = activeExamDistribution || EXAM_DISTRIBUTION_BASIC;
+
+  const bucket = {};
+  for (const code in requiredPerCategory) {
+    bucket[code] = [];
+  }
+  const uncategorized = [];
+
+  allIndices.forEach(idx => {
+    const q = questions[idx];
+    if (q && q.category && bucket[q.category]) {
+      bucket[q.category].push(idx);
+    } else {
+      uncategorized.push(idx);
+    }
+  });
+
+  const examIndices = [];
+
+  for (const code in requiredPerCategory) {
+    const needed = requiredPerCategory[code];
+    const available = bucket[code] || [];
+
+    // Shuffle each bucket locally
+    for (let i = available.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      const tmp = available[i];
+      available[i] = available[j];
+      available[j] = tmp;
+    }
+
+    const take = Math.min(needed, available.length);
+    for (let i = 0; i < take; i++) {
+      examIndices.push(available[i]);
+    }
+  }
+
+  // If we don't reach the target due to missing questions,
+  // top up from any remaining questions.
+  const target = examQuestionTarget || 100;
+  const extras = allIndices.filter(idx => !examIndices.includes(idx));
+  for (let i = 0; i < extras.length && examIndices.length < target; i++) {
+    examIndices.push(extras[i]);
+  }
+
+  // If we somehow have more than the target (e.g., overfilled), trim.
+  return examIndices.slice(0, target);
+}
+
+
+function resetCategoryStatsForExam() {
+  categoryStats = {};
+  for (const code in CATEGORY_INFO) {
+    categoryStats[code] = { correct: 0, total: 0 };
+  }
+  if (selectionMode === 'exam' && questionSequence && questionSequence.length > 0) {
+    questionSequence.forEach(idx => {
+      const q = questions[idx];
+      if (q && q.category && categoryStats[q.category]) {
+        categoryStats[q.category].total += 1;
+      }
+    });
+  }
+}
+
+function showNextQuestion() {
+  if (questions.length === 0) return;
+
+  resetFeedback();
+  let index;
+
+  if (selectionMode === 'norepeat' || selectionMode === 'exam') {
+    if (!questionSequence || questionSequence.length === 0) {
+      resetQuestionSequence();
+    }
+    if (questionSequence.length === 0) return;
+
+    if (questionSequencePosition >= questionSequence.length) {
+      if (selectionMode === 'exam') {
+        statusEl.textContent = 'Exam complete: you have answered all questions in this exam set.';
+        nextBtn.disabled = true;
+        renderCategoryReport();
+        return;
+      } else {
+        resetQuestionSequence();
+        statusEl.textContent = 'You have seen all questions once. Starting a new shuffled cycle.';
+      }
+    }
+    index = questionSequence[questionSequencePosition++];
+  } else {
+    index = Math.floor(Math.random() * questions.length);
+  }
+
+  currentQuestionIndex = index;
+  const q = questions[index];
+  renderQuestion(q);
+}
+
+function renderQuestion(q) {
+  if (!q) return;
+
+  // Show BankQuestionID above the question (if present)
+  if (q.bankID && q.bankID.trim() !== '') {
+    bankQuestionIdEl.textContent = `BankQuestionID: ${q.bankID}`;
+  } else {
+    bankQuestionIdEl.textContent = '';
+  }
+
+  questionTextEl.innerHTML = getQuestionText(q);
+  questionCounterEl.textContent = `Question ${totalAsked + 1}`;
+  optionsEl.innerHTML = '';
+
+  const opts = getOptionsArray(q);
+
+  opts.forEach((opt, index) => {
+    const id = `opt_${index}`;
+
+    const label = document.createElement('label');
+    label.className = 'option-label';
+    label.setAttribute('data-index', index);
+
+    const input = document.createElement('input');
+    input.type = 'radio';
+    input.name = 'option';
+    input.value = index;
+    input.id = id;
+
+    const letter = String.fromCharCode(65 + index);
+    const textNode = document.createTextNode(` ${letter}) ${opt}`);
+
+    label.appendChild(input);
+    label.appendChild(textNode);
+    optionsEl.appendChild(label);
+  });
+
+  checkBtn.disabled = false;
+  nextBtn.disabled = true;
+}
+
+function getQuestionText(q) {
+  if (currentLanguage === 'fr' && q.question_fr && q.question_fr.trim() !== '') {
+    return q.question_fr;
+  }
+  return q.question_en || q.question || '';
+}
+
+function getOptionsArray(q) {
+  if (currentLanguage === 'fr' && q.options_fr && Array.isArray(q.options_fr)) {
+    return q.options_fr;
+  }
+  if (q.options_en && Array.isArray(q.options_en)) {
+    return q.options_en;
+  }
+  return q.options || [];
+}
+
+function resetFeedback() {
+  feedbackEl.textContent = '';
+  feedbackEl.className = '';
+  explanationEl.textContent = '';
+}
+
+function clearQuestion() {
+  bankQuestionIdEl.textContent = '';
+  questionTextEl.textContent = '';
+  optionsEl.innerHTML = '';
+  feedbackEl.textContent = '';
+  explanationEl.textContent = '';
+  questionCounterEl.textContent = '';
+}
+
+function handleCheckAnswer(event) {
+  event.preventDefault();
+  if (currentQuestionIndex === null) return;
+  const q = questions[currentQuestionIndex];
+
+  const selected = optionsForm.querySelector('input[name="option"]:checked');
+  if (!selected) {
+    alert('Please select an answer.');
+    return;
+  }
+
+  const selectedIndex = parseInt(selected.value, 10);
+  const correctIndex = q.correctIndex;
+
+  const labels = optionsEl.querySelectorAll('.option-label');
+  labels.forEach(label => {
+    const idx = parseInt(label.getAttribute('data-index'), 10);
+    label.classList.remove('correct', 'incorrect');
+    if (idx === correctIndex) {
+      label.classList.add('correct');
+    }
+  });
+
+  // If the chosen answer is wrong, mark that specific option in red
+  if (selectedIndex !== correctIndex) {
+    const wrongLabel = optionsEl.querySelector(`.option-label[data-index="${selectedIndex}"]`);
+    if (wrongLabel) {
+      wrongLabel.classList.add('incorrect');
+    }
+  }
+
+  if (selectedIndex === correctIndex) {
+    feedbackEl.textContent = 'Correct!';
+    feedbackEl.className = 'correct';
+    totalCorrect += 1;
+    if (selectionMode === 'exam' && q.category && categoryStats[q.category]) {
+      categoryStats[q.category].correct += 1;
+    }
+  } else {
+    feedbackEl.textContent = 'Incorrect.';
+    feedbackEl.className = 'incorrect';
+
+    // Track wrong question (store raw english version)
+    if (q.raw) {
+      wrongQuestions.push(q.raw);
+      updateWrongInfo();
+    }
+  }
+
+  totalAsked += 1;
+  updateScore();
+
+  const letters = ['A', 'B', 'C', 'D'];
+  const correctLetter = letters[correctIndex] || '';
+  const opts = getOptionsArray(q);
+
+  // Explanation text: show simple correct-answer line if no custom explanation
+  let expl = q.explanation || '';
+  if (!expl || expl.trim() === '') {
+    expl = `Correct answer: ${correctLetter}) ${opts[correctIndex]}`;
+  } else {
+    expl = `Correct answer: ${correctLetter}) ${opts[correctIndex]}\n\n${expl}`;
+  }
+
+  explanationEl.textContent = expl;
+
+  checkBtn.disabled = true;
+  nextBtn.disabled = false;
+
+  // In exam mode, when the last question has just been answered, render final category report
+  if (selectionMode === 'exam' &&
+      questionSequencePosition >= questionSequence.length) {
+    renderCategoryReport();
+  }
+}
+
+function updateScore() {
+  if (totalAsked === 0) {
+    scoreEl.textContent = 'Score: 0 / 0 (0%)';
+    return;
+  }
+  const pct = Math.round((totalCorrect / totalAsked) * 100);
+  let status = '';
+  if (selectionMode === 'exam') {
+    if (pct >= 80) {
+      status = ' – Pass with Honours';
+    } else if (pct >= 70) {
+      status = ' – Pass';
+    } else {
+      status = ' – Below passing grade';
+    }
+  }
+  scoreEl.textContent = `Score: ${totalCorrect} / ${totalAsked} (${pct}%)${status}`;
+}
+
+function updateWrongInfo() {
+  if (!wrongQuestions.length) {
+    wrongInfoEl.textContent = 'You haven’t missed any questions yet.';
+    downloadWrongBtn.disabled = true;
+  } else {
+    wrongInfoEl.textContent = `You have missed ${wrongQuestions.length} question(s). You can download them as a CSV for review.`;
+    downloadWrongBtn.disabled = false;
+  }
+}
+
+function downloadWrongQuestionsCsv() {
+  if (!wrongQuestions.length) return;
+
+  const header = [
+    'question',
+    'optionA',
+    'optionB',
+    'optionC',
+    'optionD',
+    'correctOption',
+    'explanation',
+    'BankQuestionID',
+    'Category'
+  ];
+
+  const rows = [header.join(',')];
+
+  wrongQuestions.forEach(q => {
+    const correctIndex = letterToIndex(q.correctLetter);
+    const correctOptionLetter = indexToLetter(correctIndex);
+    const cells = [
+      q.question || '',
+      q.optionA || '',
+      q.optionB || '',
+      q.optionC || '',
+      q.optionD || '',
+      correctOptionLetter,
+      (q.explanation || '').replace(/\r?\n/g, ' '),
+      q.bankID || '',
+      q.category || ''
+    ];
+
+    const escaped = cells.map(val => {
+      const s = val.toString();
+      if (s.includes('"') || s.includes(',') || s.includes('\n')) {
+        return '"' + s.replace(/"/g, '""') + '"';
+      }
+      return s;
+    });
+
+    rows.push(escaped.join(','));
+  });
+
+  const blob = new Blob([rows.join('\r\n')], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'wrong_questions_review.csv';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function renderCategoryReport() {
+  if (!categoryReportEl || !categoryStats) return;
+  let totalQuestions = 0;
+  let totalCorrectLocal = 0;
+
+  for (const code in categoryStats) {
+    totalQuestions += categoryStats[code].total;
+    totalCorrectLocal += categoryStats[code].correct;
+  }
+
+  if (totalQuestions === 0) {
+    categoryReportEl.innerHTML = '';
+    return;
+  }
+
+  let html = '<h3>Category Breakdown (Exam)</h3>';
+  html += '<table border="1" cellpadding="4" cellspacing="0">';
+  html += '<tr><th>Category</th><th>Correct</th><th>Questions</th><th>Percent</th></tr>';
+
+  for (const code in CATEGORY_INFO) {
+    const stats = categoryStats[code];
+    if (!stats) continue;
+    const catTotal = stats.total;
+    const catCorrect = stats.correct;
+    const pct = catTotal > 0 ? Math.round((catCorrect / catTotal) * 100) : 0;
+    html += `<tr><td>${code} - ${CATEGORY_INFO[code]}</td><td>${catCorrect}</td><td>${catTotal}</td><td>${pct}%</td></tr>`;
+  }
+
+  const overallPct = Math.round((totalCorrectLocal / totalQuestions) * 100);
+  html += `<tr><th>Overall</th><th>${totalCorrectLocal}</th><th>${totalQuestions}</th><th>${overallPct}%</th></tr>`;
+  html += '</table>';
+
+  categoryReportEl.innerHTML = html;
+}
+</script>
+
+</body>
+</html>
