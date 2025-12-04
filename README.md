@@ -1,216 +1,274 @@
-# 📘 READ ME FIRST — Amateur Radio Exam Practice App
-*A complete guide to using the HTML exam simulator*
-*(Applies to the version included here: `ham_quiz_APP.html`)*
+📘 README_FIRST — Amateur Radio Exam Practice App
 
---------------------------------------------------------------------------------
+A complete guide to the bilingual Basic & Advanced ISED exam simulator
+(Updated for the latest version of ham_quiz_APP.html)
 
-## ⭐ Overview
-This app is a **self-contained, offline amateur radio exam simulator** that runs entirely in your web browser.  
-No installation, no server, no internet required once you have the HTML file.
 
-It supports:
+README_FIRST
 
-- **ISED Basic Question Bank**  
-- **ISED Advanced Question Bank**  
-- Your own custom training sets  
-- Any CSV formatted according to the structure explained below  
+⭐ Overview
 
-You can practice in **random mode**, **no-repeat mode**, or the official **100-question Basic exam format** with category weighting identical to the Government of Canada’s online practice exam.
+This HTML application is a fully offline, bilingual Amateur Radio exam simulator for:
 
---------------------------------------------------------------------------------
+Basic Qualification
 
-## 🧩 1. How to Load a Question Bank
+Basic + Honours
 
-### Step 1 — Export your bank as CSV  
-You can use:
+Advanced Qualification
 
-- The official Basic exam question bank  
-- The official Advanced exam question bank  
-- Your own customized question collection  
+It automatically detects whether you upload a Basic or Advanced question bank and adjusts:
 
-Export the file as **CSV**.
+Category names
 
-### Step 2 — Load into the app  
-Click **Choose File**, select the CSV, and the app will parse everything automatically.
+Exam mode question counts
 
-If everything is valid, you will see:
+Category distribution
 
-- Total number of questions loaded  
-- Quiz controls  
-- Wrong-question counter  
+Pass/Pass with Honours thresholds
 
---------------------------------------------------------------------------------
+Test report structure
 
-## 🔍 2. Supported CSV Formats
+It requires no installation, no server, and runs 100% inside your browser.
 
-### **A) Vertical Format** (Fabien’s format)
-A set of key/value rows per question:
+🚀 NEW FEATURES (2025 UPDATE)
+✅ Automatic Basic vs Advanced Profile Detection
 
-question | text  
-optionA | text  
-optionB | text  
-optionC | text  
-optionD | text  
-correctOption | A/B/C/D  
-Explanation | text  
-BankQuestionID | B-001-001-001  
+The app detects the exam type based on the BankQuestionID:
 
-### **B) Horizontal Format** (Official ISED format)
+B-xxx → Basic exam profile
 
-One row per question:
+A-xxx → Advanced exam profile
 
-question,optionA,optionB,optionC,optionD,correctOption,explanation,BankQuestionID  
+Once detected, the UI displays:
 
-Both formats are fully supported.
+Profile: Basic (official structure: 100 questions)
+or
+Profile: Advanced (official structure: 50 questions)
 
---------------------------------------------------------------------------------
+✅ Official Exam Mode for Both Basic & Advanced
 
-## 📚 3. Using Government of Canada Question Banks
+When using Exam mode, the app now uses the exact question distribution used by the Government of Canada.
 
-The Government publishes:
+BASIC — 100-question distribution
+Category	Questions
+001 – Regulations and Policies	25
+002 – Operating and Procedures	9
+003 – Station Assembly, Practice & Safety	21
+004 – Circuit Components	6
+005 – Basic Electronics & Theory	13
+006 – Feedlines & Antenna Systems	13
+007 – Radio Wave Propagation	8
+008 – Interference & Suppression	5
+ADVANCED — 50-question distribution
+Category	Questions
+001 – Advanced Theory	5
+002 – Advanced Components & Circuits	12
+003 – Measurements	6
+004 – Power Supplies	4
+005 – Transmitters, Modulation & Processing	9
+006 – Receivers	5
+007 – Feedlines, Matching & Antenna Systems	9
 
-- **Basic Question Bank** (~984 questions)  
-- **Advanced Question Bank** (several hundred technical questions)
+Exam mode automatically adjusts based on the detected profile.
 
-You may copy these into Excel, export as CSV, and load directly into this application.
+✅ Dynamic Exam Mode Label
 
---------------------------------------------------------------------------------
+The Exam mode button now shows:
 
-## 🧠 4. How Categories Work
+Exam (official structure: 100 questions)
 
-Category comes from BankQuestionID:
+Exam (official structure: 50 questions)
 
-- B-001 → Category 001  
-- B-002 → Category 002  
-- … etc.
+depending on which bank is loaded.
 
-Mapped to:
+✅ English/French Language Toggle
 
-001 – Regulations and Policies  
-002 – Operating and Procedures  
-003 – Station Assembly, Practice and Safety  
-004 – Circuit Components  
-005 – Basic Electronics and Theory  
-006 – Feedlines and Antenna Systems  
-007 – Radio Wave Propagation  
-008 – Interference and Suppression  
+For official bilingual files (amat_basic_quest_delim.txt):
 
-Used for:
+Question text
 
-- Exam selection  
-- Category scoring  
-- End-of-exam breakdown  
+Answer choices
 
---------------------------------------------------------------------------------
+Explanations
 
-## 📝 5. Exam Mode Question Distribution (Official)
+…all switch between EN ↔ FR instantly.
 
-The Basic exam uses:
+✅ HTML-safe Explanation Rendering
 
-Category | Questions  
----------|----------  
-001 | 25  
-002 | 9  
-003 | 21  
-004 | 6  
-005 | 13  
-006 | 13  
-007 | 8  
-008 | 5  
+Explanations can include:
 
-This app automatically selects **exactly these amounts** for each exam session.
+HTML tables
 
---------------------------------------------------------------------------------
+Bold/italic
 
-## 🧮 6. Quiz Modes
+Code blocks
 
-### 🎲 Random Mode  
-Displays a random question (may repeat).
+Math
 
-### 🔄 No-Repeat Mode  
-Shows every question exactly once until the entire bank is exhausted.
+Special characters (&nbsp;, &#39;, etc.)
 
-### 📝 Exam Mode (100-question official format)  
-- Uses official category weighting  
-- Tracks score  
-- Displays Pass / Pass with Honours  
-- Shows full category analysis  
+The app uses innerHTML, so formatting displays exactly as intended.
 
---------------------------------------------------------------------------------
+✅ Correct Answer Highlighting Fixed
 
-## 🧾 7. Explanation Rendering
+Selected wrong answers highlight in red, correct ones in green, matching the earlier behaviour.
 
-Explanations support:
+✅ Correct “Pass / Pass with Honours” Display
 
-- HTML tags  
-- Tables  
-- Line breaks  
-- Bold/italic  
-- HTML entities  
+After completing an exam:
 
-Because the app uses `innerHTML`, complex formatting will display correctly.
+≥ 80% → Pass with Honours
 
---------------------------------------------------------------------------------
+70–79% → Pass
 
-## 🚫 8. Wrong Answer Tracking & Export
+<70% → Fail
 
-Every unique wrong question is stored once.
+This matches ISED scoring rules.
 
-You may:
+✅ End-of-Exam Category Breakdown Report
 
-- Review wrong questions  
-- Export them as CSV  
-- Reload as a custom study set  
+At the end of Exam mode, the app generates a government-style category report:
 
---------------------------------------------------------------------------------
+Correct answers per category
 
-## 📊 9. End-of-Exam Category Breakdown
+Total questions in that category
 
-At the end of Exam Mode, the summary includes:
+Percentage per category
 
-- Correct answers  
-- Total questions per category  
-- Percentage  
-- Official-style format  
+Overall score
 
---------------------------------------------------------------------------------
+Pass status
 
-## 💾 10. Fully Offline
+Wrong question list export
 
-No processing is done online.  
-Everything runs in your browser for complete privacy.
+Works for both Basic and Advanced.
 
---------------------------------------------------------------------------------
+📁 FILE FORMATS SUPPORTED
+✔ 1. Official ISED bilingual delimited format
 
-## 🏗️ 11. Extensible Design
+The app now reads the original government TXT file:
 
-Any CSV with:
+question_id;question_en;correct_en;distr1_en;distr2_en;distr3_en;question_fr;correct_fr;distr1_fr;distr2_fr;distr3_fr
 
-- question  
-- optionA–optionD  
-- correctOption  
-- explanation (optional)  
-- BankQuestionID (optional but recommended)
 
-…will load correctly.
+No CSV conversion required.
 
-Supports **Basic**, **Advanced**, or custom question banks.
+✔ 2. Vertical CSV (Fabien’s format)
+question
+optionA
+optionB
+optionC
+optionD
+correctOption
+explanation
+BankQuestionID
 
---------------------------------------------------------------------------------
 
-## 🏁 12. Recommended Folder Layout
+Supports multiline explanations.
 
-/YourStudyFolder  
-  |-- ham_quiz_exam_mode.html  
-  |-- README_FIRST.txt  
-  |-- Basic_QuestionBank.csv  
-  |-- Advanced_QuestionBank.csv  
-  |-- Custom_Set.csv  
-  |-- WrongQuestions_YYYYMMDD.csv  
+✔ 3. Horizontal CSV (1 row per question)
+question,optionA,optionB,optionC,optionD,correctOption,explanation,BankQuestionID
 
---------------------------------------------------------------------------------
+🧠 CATEGORY SYSTEM
 
-## 💙 Final Note
+Categories are determined through BankQuestionID, e.g.:
+
+B-001-003-004 → Basic Category 001
+
+A-004-005-002 → Advanced Category 004
+
+These values drive:
+
+Exam mode distribution
+
+End-of-exam reports
+
+Profile selection
+
+🎮 QUIZ MODES
+1. Random
+
+Questions chosen randomly (may repeat).
+
+2. No Repeats
+
+Cycles through every question exactly once.
+
+3. Official Exam Mode
+
+Basic → 100 questions
+Advanced → 50 questions
+
+Uses official ISED category weighting and produces a government-style report.
+
+🧾 WRONG QUESTION TRACKING & EXPORT
+
+The app keeps a unique set of wrong questions and allows exporting them as CSV for focused study.
+
+📥 HOW TO USE THE APP
+Step 1 — Load a question file
+
+Supports TXT (ISED) and CSV.
+
+Step 2 — Select language (EN/FR)
+
+Only shown if a bilingual bank is loaded.
+
+Step 3 — Choose quiz mode
+
+Random
+
+No repeat
+
+Exam (official mode)
+
+Step 4 — Start quiz
+
+Click Next Question.
+
+🔧 HOW THE DATABASE WORKS
+
+The app reads TXT/CSV line by line.
+
+Each question becomes a standardized internal object.
+
+If using ISED TXT:
+
+English & French text is stored in parallel.
+
+If using CSV:
+
+Explanations are HTML-ready.
+
+Category IDs from BankQuestionID determine exam distribution structure.
+
+🏁 RECOMMENDED FILE STRUCTURE FOR GITHUB
+/HAM-Exam-App
+│── ham_quiz_APP.html
+│── README_FIRST.txt
+│── /question_banks
+│     ├── amat_basic_quest_delim.txt
+│     ├── amat_advanced_quest_delim.txt
+│     ├── BankQuestionBasic.csv
+│     └── BankQuestionAdvanced.csv
+│── /examples
+│     └── WrongQuestionsSample.csv
+
+💬 FINAL NOTE
+
+This application now replicates the official ISED Basic and Advanced exam engines, works offline, supports bilingual content, and is flexible enough for any custom training bank.
+
+You can now study:
+
+Faster
+
+Smarter
+
+With the same structure used by ISED
+
+In English or French
+
+With complete progress tracking
 
 This tool was built to make studying faster, clearer, and more enjoyable.  
 Load any question bank, customize your study path, and track progress like the real exam system.
