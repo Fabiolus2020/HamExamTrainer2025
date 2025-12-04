@@ -1,6 +1,6 @@
 # 📘 READ ME FIRST — Amateur Radio Exam Practice App
 *A complete guide to using the HTML exam simulator*
-*(Applies to the version included here: `ham_quiz_exam_mode_with_results_and_categories_innerHTMLNEEEWWW.html`)*
+*(Applies to the version included here: `ham_quiz_APP.html`)*
 
 --------------------------------------------------------------------------------
 
