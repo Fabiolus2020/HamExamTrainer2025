@@ -200,7 +200,8 @@ Redistribution or commercial repackaging requires permission.
 Questions, suggestions, or feature ideas?
 Feel free to open an issue or reach out through GitHub.
 
-
+Fabien
+the_fabiolous@hotmail.com
 ______________________________________________________________________________
 
 
@@ -405,3 +406,6 @@ La redistribution commerciale nécessite une autorisation.
 📬 Contact
 
 Pour toute question ou suggestion, veuillez ouvrir un billet (issue) sur GitHub.
+
+Fabien
+the_fabiolous@hotmail.com
