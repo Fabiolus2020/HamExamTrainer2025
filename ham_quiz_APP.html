@@ -262,12 +262,21 @@ body.dark .weak-practice-btn {
   </div>
 
   <p id="step2Text"><strong>Step 2:</strong> Load the official ISED question bank file <code>amat_basic_quest_delim.txt</code> or a compatible CSV file.</p>
+  <div id="officialLoadButtons" class="controls" style="margin-top:6px;margin-bottom:6px;">
+    <button type="button" id="loadBasicBtn">Load official Basic bank (from GitHub)</button>
+    <button type="button" id="loadAdvancedBtn">Load official Advanced bank (from GitHub)</button>
+  </div>
+  <!-- New bilingual GitHub note -->
+  <p id="githubNote" style="font-size:0.85rem; color:#555; margin-top:4px;">
+    Requires internet to load from GitHub.
+  </p>
+
+  <input type="file" id="fileInput" accept=".csv,.txt">
+  <p id="localFileNote" style="font-size:0.85rem; color:#555; margin-top:4px;">Use this option to load a local file.</p>
+  <div id="status">No file loaded.</div>
 
   <p id="step3Text"><strong>Step 3:</strong> Select the desired question mode (Random, No repeats, or Exam).</p>
   <p id="step4Text"><strong>Step 4:</strong> Click <em>Next Question</em> to start the quiz.</p>
-
-  <input type="file" id="fileInput" accept=".csv,.txt">
-  <div id="status">No file loaded.</div>
   <div id="modeControls" style="margin-top:8px;">
     <strong id="modeLabel">Question mode:</strong>
     <label><input type="radio" name="mode" id="modeRandom" value="random" checked> <span id="labelRandom">Random</span></label>
@@ -420,8 +429,6 @@ function updateCategoryTrainingVisibility() {
 }
 
 // Per-exam category statistics
-
-// Per-exam category statistics
 let categoryStats = {};
 let cycleAnsweredCount = 0;
 
@@ -435,9 +442,12 @@ const UI_STRINGS = {
   en: {
     title: 'Amateur Radio Exam Practice',
     step1: 'Step 1: Choose your preferred language.',
-    step2: 'Step 2: Load the official ISED question bank file amat_basic_quest_delim.txt or a compatible CSV file.',
+    step2: 'Step 2: Load a question bank. You can either use the GitHub buttons below (official Basic / Advanced banks) or select a local TXT/CSV file.',
     step3: 'Step 3: Select the desired question mode (Random, No repeats, or Exam).',
     step4: 'Step 4: Click "Next Question" to start the quiz.',
+    loadBasicBtn: 'Load official Basic bank (from GitHub)',
+    loadAdvancedBtn: 'Load official Advanced bank (from GitHub)',
+    githubNote: 'Requires internet to load from GitHub.',
     modeLabel: 'Question mode:',
     randomLabel: 'Random',
     noRepeatLabel: 'No repeats until all questions used',
@@ -504,9 +514,12 @@ const UI_STRINGS = {
   fr: {
     title: 'Pratique pour l’examen de radioamateur',
     step1: 'Étape 1 : Choisissez la langue de votre choix.',
-    step2: 'Étape 2 : Chargez le fichier officiel de la banque de questions d’ISDE amat_basic_quest_delim.txt ou un fichier CSV compatible.',
+    step2: 'Étape 2 : Chargez une banque de questions. Vous pouvez utiliser les boutons GitHub ci-dessous (banques officielle de base / avancée) ou sélectionner un fichier TXT/CSV local.',
     step3: 'Étape 3 : Sélectionnez le mode de questions souhaité (Aléatoire, Sans répétition ou Examen).',
     step4: 'Étape 4 : Cliquez sur « Question suivante » pour commencer le quiz.',
+    loadBasicBtn: 'Charger la banque de base officielle (depuis GitHub)',
+    loadAdvancedBtn: 'Charger la banque avancée officielle (depuis GitHub)',
+    githubNote: 'Nécessite une connexion Internet pour charger depuis GitHub.',
     modeLabel: 'Mode de questions :',
     randomLabel: 'Aléatoire',
     noRepeatLabel: 'Sans répétition jusqu’à ce que toutes les questions soient utilisées',
@@ -630,6 +643,8 @@ function applyLanguage() {
   if (labelExamEl) {
     labelExamEl.textContent = examProfile === 'advanced' ? strings.examLabelAdvanced : strings.examLabelBasic;
   }
+  if (loadBasicBtnEl && strings.loadBasicBtn) loadBasicBtnEl.textContent = strings.loadBasicBtn;
+  if (loadAdvancedBtnEl && strings.loadAdvancedBtn) loadAdvancedBtnEl.textContent = strings.loadAdvancedBtn;
   if (labelCategoryEl && strings.categoryLabel) {
     labelCategoryEl.textContent = strings.categoryLabel;
   }
@@ -638,6 +653,12 @@ function applyLanguage() {
   }
   if (categoryHintEl && strings.categoryHint) {
     categoryHintEl.textContent = strings.categoryHint;
+  }
+  // New: bilingual GitHub note
+  if (document.getElementById("localFileNote") && strings.localFileNote) document.getElementById("localFileNote").textContent = strings.localFileNote;
+
+  if (githubNoteEl && strings.githubNote) {
+    githubNoteEl.textContent = strings.githubNote;
   }
   // Support / About card localization
   const supportTitleEl = document.getElementById('supportTitle');
@@ -675,6 +696,9 @@ function applyLanguage() {
 
 const fileInput = document.getElementById('fileInput');
 const statusEl = document.getElementById('status');
+const loadBasicBtnEl = document.getElementById('loadBasicBtn');
+const loadAdvancedBtnEl = document.getElementById('loadAdvancedBtn');
+
 const quizCard = document.getElementById('quizCard');
 const bankQuestionIdEl = document.getElementById('bankQuestionId');
 const questionTextEl = document.getElementById('questionText');
@@ -714,6 +738,7 @@ const categoryTrainingContainer = document.getElementById('categoryTrainingConta
 const categoryCheckboxesEl = document.getElementById('categoryCheckboxes');
 const categoryTrainingTitleEl = document.getElementById('categoryTrainingTitle');
 const categoryHintEl = document.getElementById('categoryHint');
+const githubNoteEl = document.getElementById('githubNote'); // NEW: GitHub note element
 
 // Hook up language radio buttons
 if (langEnRadio && langFrRadio) {
@@ -816,6 +841,71 @@ const categoryReportEl = document.getElementById('categoryReport');
 applyLanguage();
 
 fileInput.addEventListener('change', handleFileSelect);
+// Load official banks directly from GitHub (raw URLs)
+const OFFICIAL_BASIC_URL = 'https://raw.githubusercontent.com/Fabiolus2020/HamExamTrainer2025/main/BankQuestions/amat_basic_quest_delim2025.txt';
+const OFFICIAL_ADVANCED_URL = 'https://raw.githubusercontent.com/Fabiolus2020/HamExamTrainer2025/main/BankQuestions/amat_adv_quest_delim2025.txt';
+
+function loadOfficialBank(url) {
+  const strings = UI_STRINGS[currentLanguage] || UI_STRINGS.en;
+  statusEl.textContent = 'Loading official bank from GitHub...';
+  fetch(url)
+    .then(resp => {
+      if (!resp.ok) throw new Error('HTTP ' + resp.status);
+      return resp.text();
+    })
+    .then(text => {
+      try {
+        // Official banks are ISED-style delimited TXT
+        const parsed = parseISEDDelimitedQuestions(text);
+        if (!parsed || parsed.length === 0) {
+          statusEl.textContent = strings.statusNoValid;
+          quizCard.style.display = 'none';
+          return;
+        }
+        questions = parsed;
+        detectProfileFromQuestions(questions);
+        applyLanguage();
+        statusEl.textContent = strings.loadedMessage.replace('{N}', questions.length);
+        quizCard.style.display = 'block';
+
+        totalAsked = 0;
+        totalCorrect = 0;
+        recentResults = [];
+        wrongQuestionIndices = new Set();
+        updateScore();
+        updateRecentAccuracy();
+        updateProgressUI();
+
+        resetQuestionSequence();
+        resetFeedback();
+        clearQuestion();
+        nextBtn.disabled = false;
+        checkBtn.disabled = true;
+      } catch (err) {
+        console.error(err);
+        statusEl.textContent = strings.statusErrorFile;
+        quizCard.style.display = 'none';
+      }
+    })
+    .catch(err => {
+      console.error(err);
+      statusEl.textContent = strings.statusErrorFile;
+      quizCard.style.display = 'none';
+    });
+}
+
+if (loadBasicBtnEl) {
+  loadBasicBtnEl.addEventListener('click', () => {
+    loadOfficialBank(OFFICIAL_BASIC_URL);
+  });
+}
+
+if (loadAdvancedBtnEl) {
+  loadAdvancedBtnEl.addEventListener('click', () => {
+    loadOfficialBank(OFFICIAL_ADVANCED_URL);
+  });
+}
+
 checkBtn.addEventListener('click', handleCheckAnswer);
 nextBtn.addEventListener('click', showNextQuestion);
 
