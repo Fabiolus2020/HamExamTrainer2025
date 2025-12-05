@@ -267,6 +267,7 @@ body.dark .weak-practice-btn {
   <div id="officialLoadButtons" class="controls" style="margin-top:6px;margin-bottom:6px;">
     <button type="button" id="loadBasicBtn">Load official Basic bank (from GitHub)</button>
     <button type="button" id="loadAdvancedBtn">Load official Advanced bank (from GitHub)</button>
+    <button type="button" id="downloadCsvBtn">Download explanation CSV (from GitHub)</button>
   </div>
   <!-- New bilingual GitHub note -->
   <p id="githubNote" style="font-size:0.85rem; color:#555; margin-top:4px;">
@@ -278,7 +279,6 @@ body.dark .weak-practice-btn {
   <div id="status">No file loaded.</div>
 
   <p id="step3Text"><strong>Step 3:</strong> Select the desired question mode (Random, No repeats, or Exam).</p>
-  <p id="step4Text"><strong>Step 4:</strong> Click <em>Next Question</em> to start the quiz.</p>
   <div id="modeControls" style="margin-top:8px;">
     <strong id="modeLabel">Question mode:</strong>
     <label><input type="radio" name="mode" id="modeRandom" value="random" checked> <span id="labelRandom">Random</span></label>
@@ -293,6 +293,7 @@ body.dark .weak-practice-btn {
     <div id="categoryCheckboxes" style="margin-top:4px;"></div>
     <p id="categoryHint" style="font-size:0.85rem; margin-top:4px;"></p>
   </div>
+  <p id="step4Text"><strong>Step 4:</strong> Click <em>Next Question</em> to start the quiz.</p>
 </div>
 
 <div class="card" id="quizCard" style="display:none;">
@@ -509,9 +510,11 @@ const UI_STRINGS = {
     categoryTrainingTitle: 'Category training (by topic)',
     categoryHint: 'Select one or more categories (e.g., only Regulations, only Antennas, only Propagation), then click \"Next Question\".',
     supportTitle: 'About & Support',
-    supportText: 'This free bilingual HAM exam trainer was created to help students prepare using real-style questions, official exam structures, and category statistics. If this app helps you, you can support future improvements.',
+    supportText: 'This free bilingual HAM exam trainer was created to help students prepare using real-style questions, official exam structures, and category statistics. It is licensed under CC BY-NC-SA 4.0 (non-commercial, attribution, share-alike). You may use and share it for personal or educational purposes, but not resell it or include it in paid products or services. If this app helps you, you can support future improvements.',
     supportButton: '☕ Buy me a coffee',
     supportButtonUrl: 'https://buymeacoffee.com/fabiolus',
+    downloadCsvBtn: 'Download explanation CSV (from GitHub)',
+    licenseFooterHtml: 'Licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer">CC BY-NC-SA 4.0</a> &ndash; Non-commercial use only',
   },
   fr: {
     title: 'Pratique pour l’examen de radioamateur',
@@ -579,9 +582,11 @@ const UI_STRINGS = {
     categoryTrainingTitle: 'Entraînement par catégorie (par thème)',
     categoryHint: 'Sélectionnez une ou plusieurs catégories (par ex. seulement Règlements, seulement Antennes, seulement Propagation), puis cliquez sur « Question suivante ».',
     supportTitle: 'À propos et soutien',
-    supportText: 'Cet outil bilingue gratuit pour l’examen de radioamateur a été créé pour aider les étudiantes et étudiants à se préparer avec des questions de style officiel, une structure d’examen réaliste et des statistiques par catégorie. Si cet outil vous aide, vous pouvez soutenir les améliorations futures.',
+    supportText: 'Cet outil bilingue gratuit pour l’examen de radioamateur vous aide à vous préparer avec des questions de style officiel, une structure réaliste et des statistiques par catégorie. Il est diffusé sous licence CC BY-NC-SA 4.0 (non commercial, attribution, partage dans les mêmes conditions). Vous pouvez l’utiliser et le partager à des fins personnelles ou éducatives, mais pas le revendre ni l’intégrer à des produits ou services payants. Si cet outil vous aide, vous pouvez soutenir les améliorations futures.',
     supportButton: '☕ M’offrir un café',
-    supportButtonUrl: 'https://buymeacoffee.com/fabiolus'
+    supportButtonUrl: 'https://buymeacoffee.com/fabiolus',
+    downloadCsvBtn: 'Télécharger le CSV d’explications (depuis GitHub)',
+    licenseFooterHtml: 'Sous licence <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer">CC BY-NC-SA 4.0</a> &ndash; Utilisation non commerciale uniquement'
   }
 };
 
@@ -647,6 +652,7 @@ function applyLanguage() {
   }
   if (loadBasicBtnEl && strings.loadBasicBtn) loadBasicBtnEl.textContent = strings.loadBasicBtn;
   if (loadAdvancedBtnEl && strings.loadAdvancedBtn) loadAdvancedBtnEl.textContent = strings.loadAdvancedBtn;
+  if (downloadCsvBtnEl && strings.downloadCsvBtn) downloadCsvBtnEl.textContent = strings.downloadCsvBtn;
   if (labelCategoryEl && strings.categoryLabel) {
     labelCategoryEl.textContent = strings.categoryLabel;
   }
@@ -671,6 +677,10 @@ function applyLanguage() {
   if (supportButtonEl) {
     if (strings.supportButton) supportButtonEl.textContent = strings.supportButton;
     if (strings.supportButtonUrl) supportButtonEl.href = strings.supportButtonUrl;
+  }
+  const licenseFooterEl = document.getElementById('licenseFooter');
+  if (licenseFooterEl && strings.licenseFooterHtml) {
+    licenseFooterEl.innerHTML = strings.licenseFooterHtml;
   }
   if (checkBtn) checkBtn.textContent = strings.checkBtn;
   if (nextBtn) nextBtn.textContent = strings.nextBtn;
@@ -700,6 +710,7 @@ const fileInput = document.getElementById('fileInput');
 const statusEl = document.getElementById('status');
 const loadBasicBtnEl = document.getElementById('loadBasicBtn');
 const loadAdvancedBtnEl = document.getElementById('loadAdvancedBtn');
+const downloadCsvBtnEl = document.getElementById('downloadCsvBtn');
 
 const quizCard = document.getElementById('quizCard');
 const bankQuestionIdEl = document.getElementById('bankQuestionId');
@@ -905,6 +916,13 @@ if (loadBasicBtnEl) {
 if (loadAdvancedBtnEl) {
   loadAdvancedBtnEl.addEventListener('click', () => {
     loadOfficialBank(OFFICIAL_ADVANCED_URL);
+  });
+}
+
+if (downloadCsvBtnEl) {
+  downloadCsvBtnEl.addEventListener('click', () => {
+    // Open the official explanation CSV (raw GitHub link)
+    window.open('https://raw.githubusercontent.com/Fabiolus2020/HamExamTrainer2025/main/BankQuestions/BankQuestionJuly2025.csv', '_blank');
   });
 }
 
@@ -1950,7 +1968,7 @@ document.getElementById('mobileToggle').addEventListener('click',()=>{
   <h2 id="supportTitle">About &amp; Support</h2>
   <p id="supportText">
     This free bilingual HAM exam trainer was created to help students prepare using real-style questions,
-    official exam structures, and category statistics. If this app helps you, you can support future improvements.
+    official exam structures, and category statistics. It is licensed under CC BY-NC-SA 4.0 (non-commercial, attribution, share-alike). You may use and share it for personal or educational purposes, but not resell it or include it in paid products or services. If this app helps you, you can support future improvements.
   </p>
   <a id="supportButton" href="https://buymeacoffee.com/fabiolus" target="_blank" rel="noopener noreferrer"
      style="display:inline-block;padding:8px 14px;border-radius:6px;border:1px solid #c98b00;
@@ -1969,6 +1987,10 @@ if ('serviceWorker' in navigator) {
   });
 }
 </script>
+
+<footer id="licenseFooter" style="margin-top:12px;font-size:0.75rem;color:#777;text-align:center;">
+  Licensed under CC BY-NC-SA 4.0 &ndash; Non-commercial use only
+</footer>
 
 </body>
 </html>
