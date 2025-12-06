@@ -763,6 +763,25 @@ body.theme-highcontrast .skip-link {
   color: #ffffff;
 }
 
+
+/* Footer styling */
+.app-footer {
+  margin-top: 40px;
+  padding: 16px 0;
+  text-align: center;
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+.app-footer a {
+  color: inherit;
+  text-decoration: underline;
+}
+
+.app-footer a:hover {
+  opacity: 1;
+}
+
 </style>
 </head>
 <body>
@@ -1126,7 +1145,8 @@ const UI_STRINGS = {
     downloadCsvBtn: 'Download explanation CSV (from GitHub)',
     licenseFooterHtml: 'Licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer">CC BY-NC-SA 4.0</a> &ndash; Non-commercial use only',
 fullScreenOn: 'Full screen',
-fullScreenOff: 'Exit full screen',
+licenseFooterText: 'Licensed under CC BY-NC-SA 4.0 – View Full License',
+    fullScreenOff: 'Exit full screen',
     skipToQuizLabel: 'Skip to quiz content',
     quizRegionLabel: 'Quiz',
     answerChoicesLegend: 'Answer choices',
@@ -1217,6 +1237,7 @@ fullScreenOff: 'Exit full screen',
     downloadCsvBtn: 'Télécharger le CSV d’explications (depuis GitHub)',
     licenseFooterHtml: 'Sous licence <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer">CC BY-NC-SA 4.0</a> &ndash; Utilisation non commerciale uniquement',
     fullScreenOn: 'Plein écran',
+    licenseFooterText: 'Sous licence CC BY-NC-SA 4.0 – Voir la licence complète',
     fullScreenOff: 'Quitter le mode plein écran',
     skipToQuizLabel: 'Aller directement au contenu du quiz',
     quizRegionLabel: 'Quiz',
@@ -1332,6 +1353,10 @@ function toggleFullscreen() {
 function applyLanguage() {
   const strings = UI_STRINGS[currentLanguage] || UI_STRINGS.en;
   if (appTitleEl) appTitleEl.textContent = strings.title;
+  if (appFooterEl && strings.licenseFooterText) {
+    const link = document.getElementById('licenseLink');
+    if (link) link.textContent = strings.licenseFooterText;
+  }
   if (typeof document !== 'undefined' && document.title !== undefined) {
     document.title = strings.title || document.title;
   }
@@ -1477,6 +1502,7 @@ const categoryTrainingContainer = document.getElementById('categoryTrainingConta
 const categoryCheckboxesEl = document.getElementById('categoryCheckboxes');
 const categoryTrainingTitleEl = document.getElementById('categoryTrainingTitle');
 const categoryHintEl = document.getElementById('categoryHint');
+const appFooterEl = document.getElementById('appFooter');
 const githubNoteEl = document.getElementById('githubNote'); // NEW: GitHub note element
 const optionsLegendEl = document.getElementById('optionsLegend');
 const quizHeadingEl = document.getElementById('quizHeading');
@@ -3595,6 +3621,16 @@ if ('serviceWorker' in navigator) {
 
 <footer id="licenseFooter" style="margin-top:12px;font-size:0.75rem;color:#777;text-align:center;">
   Licensed under CC BY-NC-SA 4.0 &ndash; Non-commercial use only
+</footer>
+
+
+<footer id="appFooter" class="app-footer">
+  <p>
+    <a href="https://raw.githubusercontent.com/Fabiolus2020/HamExamTrainer2025/main/LICENSE.md"
+       target="_blank" rel="noopener noreferrer" id="licenseLink">
+      Licensed under CC BY-NC-SA 4.0 – View Full License
+    </a>
+  </p>
 </footer>
 
 </body>
