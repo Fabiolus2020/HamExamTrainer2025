@@ -2937,13 +2937,6 @@ function scrollToQuizCard() {
 
 
 function resetApp() {
-  // Scroll to very top
-  try {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  } catch (e) {
-    window.scrollTo(0, 0);
-  }
-
   // Reset core state (without full page reload)
   questions = [];
   currentQuestionIndex = null;
@@ -3049,6 +3042,13 @@ function resetApp() {
   // Re-apply language strings (English baseline after reset)
   applyLanguage();
   clearSessionState();
+
+  // Scroll to very top (run at the end so it behaves on mobile & desktop)
+  try {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  } catch (e) {
+    window.scrollTo(0, 0);
+  }
 }
 
 
