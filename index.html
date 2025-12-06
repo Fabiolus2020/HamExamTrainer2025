@@ -496,6 +496,11 @@ const UI_STRINGS = {
     supportText: 'This free bilingual HAM exam trainer was created to help students prepare using real-style questions, official exam structures, and category statistics. It is licensed under CC BY-NC-SA 4.0 (non-commercial, attribution, share-alike). You may use and share it for personal or educational purposes, but not resell it or include it in paid products or services. If this app helps you, you can support future improvements.',
     supportButton: '☕ Buy me a coffee',
     supportButtonUrl: 'https://buymeacoffee.com/fabiolus',
+    supportExtra: 'Support my work: your donation helps me maintain and improve this free HAM exam trainer for the community.',
+    supportIssueText: '🐞 Report an issue on GitHub',
+    supportIssueUrl: 'https://github.com/Fabiolus2020/HamExamTrainer2025/issues',
+    supportReadmeText: '📘 View README on GitHub',
+    supportReadmeUrl: 'https://raw.githubusercontent.com/Fabiolus2020/HamExamTrainer2025/main/README.md',
     downloadCsvBtn: 'Download explanation CSV (from GitHub)',
     licenseFooterHtml: 'Licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer">CC BY-NC-SA 4.0</a> &ndash; Non-commercial use only',
   },
@@ -569,6 +574,11 @@ const UI_STRINGS = {
     supportText: 'Cet outil bilingue gratuit pour l’examen de radioamateur vous aide à vous préparer avec des questions de style officiel, une structure réaliste et des statistiques par catégorie. Il est diffusé sous licence CC BY-NC-SA 4.0 (non commercial, attribution, partage dans les mêmes conditions). Vous pouvez l’utiliser et le partager à des fins personnelles ou éducatives, mais pas le revendre ni l’intégrer à des produits ou services payants. Si cet outil vous aide, vous pouvez soutenir les améliorations futures.',
     supportButton: '☕ M’offrir un café',
     supportButtonUrl: 'https://buymeacoffee.com/fabiolus',
+    supportExtra: 'Soutenez mon travail : votre contribution m’aide à maintenir et améliorer gratuitement cet outil pour la communauté des radioamateurs.',
+    supportIssueText: '🐞 Signaler un problème sur GitHub',
+    supportIssueUrl: 'https://github.com/Fabiolus2020/HamExamTrainer2025/issues',
+    supportReadmeText: '📘 Consulter le README sur GitHub',
+    supportReadmeUrl: 'https://raw.githubusercontent.com/Fabiolus2020/HamExamTrainer2025/main/README.md',
     downloadCsvBtn: 'Télécharger le CSV d’explications (depuis GitHub)',
     licenseFooterHtml: 'Sous licence <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer">CC BY-NC-SA 4.0</a> &ndash; Utilisation non commerciale uniquement'
   }
@@ -656,11 +666,23 @@ function applyLanguage() {
   const supportTitleEl = document.getElementById('supportTitle');
   const supportTextEl = document.getElementById('supportText');
   const supportButtonEl = document.getElementById('supportButton');
+  const supportExtraEl = document.getElementById('supportExtra');
+  const supportIssueEl = document.getElementById('supportIssueLink');
+  const supportReadmeEl = document.getElementById('supportReadmeLink');
   if (supportTitleEl && strings.supportTitle) supportTitleEl.textContent = strings.supportTitle;
   if (supportTextEl && strings.supportText) supportTextEl.textContent = strings.supportText;
   if (supportButtonEl) {
     if (strings.supportButton) supportButtonEl.textContent = strings.supportButton;
     if (strings.supportButtonUrl) supportButtonEl.href = strings.supportButtonUrl;
+  }
+  if (supportExtraEl && strings.supportExtra) supportExtraEl.textContent = strings.supportExtra;
+  if (supportIssueEl) {
+    if (strings.supportIssueText) supportIssueEl.textContent = strings.supportIssueText;
+    if (strings.supportIssueUrl) supportIssueEl.href = strings.supportIssueUrl;
+  }
+  if (supportReadmeEl) {
+    if (strings.supportReadmeText) supportReadmeEl.textContent = strings.supportReadmeText;
+    if (strings.supportReadmeUrl) supportReadmeEl.href = strings.supportReadmeUrl;
   }
   const licenseFooterEl = document.getElementById('licenseFooter');
   if (licenseFooterEl && strings.licenseFooterHtml) {
@@ -834,8 +856,10 @@ if (modeCategoryRadio) {
 
 const categoryReportEl = document.getElementById('categoryReport');
 
-// Initial language apply (now that DOM references are ready)
-applyLanguage();
+// Initial language apply once the full DOM is ready (ensures footer hyperlink is active)
+document.addEventListener('DOMContentLoaded', () => {
+  applyLanguage();
+});
 
 fileInput.addEventListener('change', handleFileSelect);
 // Load official banks directly from GitHub (raw URLs)
@@ -2162,17 +2186,34 @@ if (categoryReportEl) {
 
 </script>
 
+
 <div class="card" id="supportCard">
   <h2 id="supportTitle">About &amp; Support</h2>
   <p id="supportText">
     This free bilingual HAM exam trainer was created to help students prepare using real-style questions,
-    official exam structures, and category statistics. It is licensed under CC BY-NC-SA 4.0 (non-commercial, attribution, share-alike). You may use and share it for personal or educational purposes, but not resell it or include it in paid products or services. If this app helps you, you can support future improvements.
+    official exam structures, and category statistics. It is licensed under CC BY-NC-SA 4.0 (non-commercial, attribution, share-alike).
+    You may use and share it for personal or educational purposes, but not resell it or include it in paid products or services.
+    If this app helps you, you can support future improvements.
   </p>
-  <a id="supportButton" href="https://buymeacoffee.com/fabiolus" target="_blank" rel="noopener noreferrer"
-     style="display:inline-block;padding:8px 14px;border-radius:6px;border:1px solid #c98b00;
-            background:#ffd24d;color:#000;font-weight:bold;text-decoration:none;">
-    ☕ Buy me a coffee
-  </a>
+  <p id="supportExtra"></p>
+  <div id="supportLinks" class="controls" style="margin-top:8px;">
+    <a id="supportButton" href="https://buymeacoffee.com/fabiolus" target="_blank" rel="noopener noreferrer"
+       style="display:inline-block;padding:8px 14px;border-radius:6px;border:1px solid #c98b00;
+              background:#ffd24d;color:#000;font-weight:bold;text-decoration:none;">
+      ☕ Buy me a coffee
+    </a>
+    <a id="supportIssueLink" href="https://github.com/Fabiolus2020/HamExamTrainer2025/issues" target="_blank" rel="noopener noreferrer"
+       style="display:inline-block;padding:8px 14px;border-radius:6px;border:1px solid #888;
+              background:#f2f2f2;color:#000;font-weight:bold;text-decoration:none;">
+      🐞 Report an issue
+    </a>
+    <a id="supportReadmeLink" href="https://raw.githubusercontent.com/Fabiolus2020/HamExamTrainer2025/main/README.md" target="_blank" rel="noopener noreferrer"
+       style="display:inline-block;padding:8px 14px;border-radius:6px;border:1px solid #888;
+              background:#f2f2f2;color:#000;font-weight:bold;text-decoration:none;">
+      📘 View README
+    </a>
+  </div>
+</div>
 </div>
 
 <script>
