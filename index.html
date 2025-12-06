@@ -7,128 +7,606 @@
 <meta charset="UTF-8">
 <title>Amateur Radio Exam Practice</title>
 <style>
+/* Base layout */
 body {
-font-family: Arial, sans-serif;
-max-width: 800px;
-margin: 20px auto;
-padding: 10px;
-line-height: 1.5;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  max-width: 900px;
+  margin: 24px auto;
+  padding: 16px;
+  line-height: 1.6;
+  background: #f4f5fb;
+  color: #1f2933;
 }
+
 h1 {
-text-align: center;
+  text-align: center;
+  font-size: 1.9rem;
+  margin: 0 0 12px 0;
+  letter-spacing: 0.02em;
 }
+
+/* Card containers */
 .card {
-border: 1px solid #ccc;
-border-radius: 8px;
-padding: 16px;
-margin-top: 16px;
-box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 18px 20px;
+  margin-top: 18px;
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
+  border: 1px solid rgba(148, 163, 184, 0.4);
 }
+
+/* Control rows */
 .controls {
-margin-top: 10px;
-display: flex;
-gap: 10px;
-flex-wrap: wrap;
+  margin-top: 12px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
 }
+
+/* Buttons */
 button {
-padding: 8px 14px;
-border-radius: 6px;
-border: 1px solid #888;
-background: #f2f2f2;
-cursor: pointer;
-font-size: 14px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  background: #e5e7eb;
+  color: #111827;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease,
+    transform 0.1s ease,
+    box-shadow 0.15s ease,
+    border-color 0.15s ease;
 }
+
+button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.18);
+}
+
 button:disabled {
-opacity: 0.6;
-cursor: not-allowed;
+  opacity: 0.65;
+  cursor: not-allowed;
+  box-shadow: none;
 }
+
+.btn-primary {
+  background: #4f46e5;
+  color: #ffffff;
+  border-color: #4f46e5;
+  box-shadow: 0 6px 14px rgba(79, 70, 229, 0.35);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: #4338ca;
+  border-color: #4338ca;
+}
+
+.btn-secondary {
+  background: #f9fafb;
+  color: #111827;
+  border-color: #d1d5db;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: #e5e7eb;
+}
+
+.btn-ghost {
+  background: transparent;
+  color: #4b5563;
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.btn-ghost:hover:not(:disabled) {
+  background: rgba(148, 163, 184, 0.15);
+}
+
+.btn-danger {
+  background: #b91c1c;
+  color: #fef2f2;
+  border-color: #b91c1c;
+}
+
+.btn-danger:hover:not(:disabled) {
+  background: #991b1b;
+  border-color: #991b1b;
+}
+/* Status & meta text */
+#memoryConsolidation {
+  margin-top: 10px;
+  font-size: 0.9rem;
+  color: #374151;
+}
+
+#memoryConsolidation h4 {
+  margin: 0 0 4px 0;
+  font-size: 0.95rem;
+}
+
+#memoryConsolidation ul {
+  margin: 4px 0 0 18px;
+  padding: 0;
+}
+
+#memoryConsolidation li {
+  margin-bottom: 2px;
+}
+
+body.dark #memoryConsolidation {
+  color: #e5e7eb;
+}
+
 #status {
-margin-top: 8px;
-font-size: 0.95rem;
-color: #555;
+  margin-top: 8px;
+  font-size: 0.95rem;
+  color: #4b5563;
 }
+
 #bankQuestionId {
-font-weight: bold;
-margin-bottom: 4px;
-color: #333;
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: #374151;
 }
+
 #questionText {
-font-weight: bold;
-margin-bottom: 10px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  font-size: 1.05rem;
 }
+
+/* Answer options */
 .option-label {
-display: block;
-margin-bottom: 6px;
-padding: 4px 6px;
-border-radius: 4px;
-transition: background 0.2s;
+  display: block;
+  margin-bottom: 6px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  background: #f9fafb;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.05s ease;
 }
+
+.option-label:hover {
+  background: #eef2ff;
+  border-color: #c7d2fe;
+}
+
 .option-label.correct {
-background: #d6f5d6;
+  background: #d1fae5;
+  border-color: #34d399;
 }
+
 .option-label.incorrect {
-background: #ffd6d6;
+  background: #fee2e2;
+  border-color: #f87171;
 }
+
+/* Feedback */
 #feedback {
-margin-top: 10px;
-font-weight: bold;
+  margin-top: 10px;
+  font-weight: 600;
 }
+
 #feedback.correct {
-color: #1c7c1c;
+  color: #15803d;
 }
+
 #feedback.incorrect {
-color: #b00000;
+  color: #b91c1c;
 }
+
 #explanation {
-margin-top: 6px;
-font-style: italic;
-color: #444;
-/* Show \n as real line breaks */
-white-space: pre-line;
+  margin-top: 6px;
+  font-style: italic;
+  color: #374151;
+  white-space: pre-line;
 }
+
 #score {
-margin-top: 10px;
-font-size: 0.95rem;
+  margin-top: 10px;
+  font-size: 0.95rem;
 }
+
 #wrongInfo {
-font-size: 0.9rem;
-color: #555;
+  font-size: 0.9rem;
+  color: #4b5563;
+}
+
+/* Mode indicator badges */
+#modeIndicator {
+  margin-top: 4px;
+  margin-bottom: 4px;
+  text-align: center;
+}
+
+.mode-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  background: #eef2ff;
+  color: #1d4ed8;
+  border: 1px solid #c7d2fe;
+}
+
+.badge-random {
+  background: #eef2ff;
+  color: #1d4ed8;
+  border-color: #c7d2fe;
+}
+
+.badge-norepeat {
+  background: #fffbeb;
+  color: #b45309;
+  border-color: #fed7aa;
+}
+
+.badge-exam {
+  background: #fee2e2;
+  color: #b91c1c;
+  border-color: #fecaca;
+}
+
+.badge-category {
+  background: #ecfdf5;
+  color: #047857;
+  border-color: #6ee7b7;
+}
+
+.badge-wrongonly {
+  background: #fdf2ff;
+  color: #7e22ce;
+  border-color: #e9d5ff;
+}
+
+body.dark .mode-badge {
+  background: #1f2937;
+  color: #e5e7eb;
+  border-color: #4b5563;
+}
+
+body.dark .badge-random {
+  background: #1e293b;
+  color: #bfdbfe;
+  border-color: #60a5fa;
+}
+
+body.dark .badge-norepeat {
+  background: #451a03;
+  color: #fed7aa;
+  border-color: #fdba74;
+}
+
+body.dark .badge-exam {
+  background: #450a0a;
+  color: #fecaca;
+  border-color: #fca5a5;
+}
+
+body.dark .badge-category {
+  background: #064e3b;
+  color: #bbf7d0;
+  border-color: #6ee7b7;
+}
+
+body.dark .badge-wrongonly {
+  background: #4c1d95;
+  color: #e9d5ff;
+  border-color: #c4b5fd;
+}
+/* Sticky question header */
+#stickyQuestionHeader {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  padding-bottom: 8px;
+  margin-bottom: 10px;
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+body.dark #stickyQuestionHeader {
+  background: #111827;
+  border-bottom-color: #374151;
+}
+/* Weak areas spotlight */
+.weak-area-item {
+  margin-top: 4px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.weak-badge {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.weak-practice-btn {
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid #4b5563;
+  background: #f9fafb;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+/* Progress bar */
+#progressContainer {
+  margin: 6px 0 8px 0;
+}
+
+#progressLabel {
+  font-size: 0.9rem;
+  margin-bottom: 4px;
+}
+
+#progressBarOuter {
+  width: 100%;
+  height: 10px;
+  background: #e5e7eb;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+#progressBarInner {
+  height: 100%;
+  width: 0%;
+  background: #22c55e;
+  transition: width 0.2s ease-out;
+}
+
+
+/* Category breakdown table with progress bars */
+.cat-breakdown-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 8px;
+  font-size: 0.9rem;
+}
+
+.cat-breakdown-table th,
+.cat-breakdown-table td {
+  padding: 6px 8px;
+  border-bottom: 1px solid #e5e7eb;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.cat-breakdown-table th {
+  font-weight: 600;
+}
+
+.cat-progress-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cat-progress-label {
+  font-size: 0.8rem;
+  color: #374151;
+}
+
+.cat-progress-outer {
+  width: 100%;
+  height: 8px;
+  background: #e5e7eb;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.cat-progress-inner {
+  height: 100%;
+  width: 0%;
+  background: #22c55e;
+  transition: width 0.25s ease-out;
+}
+
+body.dark .cat-breakdown-table th,
+body.dark .cat-breakdown-table td {
+  border-bottom-color: #374151;
+}
+
+body.dark .cat-progress-outer {
+  background: #374151;
+}
+
+body.dark .cat-progress-inner {
+  background: #22c55e;
+}
+
+body.dark .cat-progress-label {
+  color: #e5e7eb;
+}
+
+/* Recent accuracy dots */
+#recentAccuracy {
+  margin: 6px 0 4px 0;
+  font-size: 0.85rem;
+}
+
+
+/* Color themes */
+body.theme-default {
+  /* uses base colors defined above */
+}
+
+body.theme-ocean .card {
+  border-color: #0ea5e9;
+}
+body.theme-ocean .btn-primary {
+  background: #0284c7;
+  border-color: #0284c7;
+  box-shadow: 0 6px 14px rgba(37, 99, 235, 0.35);
+}
+body.theme-ocean .btn-primary:hover:not(:disabled) {
+  background: #0369a1;
+  border-color: #0369a1;
+}
+body.theme-ocean .mode-badge,
+body.theme-ocean .badge-random {
+  background: #e0f2fe;
+  color: #0369a1;
+  border-color: #7dd3fc;
+}
+body.theme-ocean .cat-progress-inner {
+  background: #0ea5e9;
+}
+
+body.theme-forest .card {
+  border-color: #16a34a;
+}
+body.theme-forest .btn-primary {
+  background: #15803d;
+  border-color: #15803d;
+  box-shadow: 0 6px 14px rgba(21, 128, 61, 0.35);
+}
+body.theme-forest .btn-primary:hover:not(:disabled) {
+  background: #166534;
+  border-color: #166534;
+}
+body.theme-forest .mode-badge,
+body.theme-forest .badge-random {
+  background: #dcfce7;
+  color: #166534;
+  border-color: #6ee7b7;
+}
+body.theme-forest .cat-progress-inner {
+  background: #22c55e;
+}
+
+body.theme-amber .card {
+  border-color: #f59e0b;
+}
+body.theme-amber .btn-primary {
+  background: #d97706;
+  border-color: #d97706;
+  box-shadow: 0 6px 14px rgba(217, 119, 6, 0.35);
+}
+body.theme-amber .btn-primary:hover:not(:disabled) {
+  background: #b45309;
+  border-color: #b45309;
+}
+body.theme-amber .mode-badge,
+body.theme-amber .badge-random {
+  background: #fffbeb;
+  color: #92400e;
+  border-color: #fed7aa;
+}
+body.theme-amber .cat-progress-inner {
+  background: #f59e0b;
+}
+
+body.theme-highcontrast {
+  background: #ffffff;
+  color: #000000;
+}
+body.theme-highcontrast .card {
+  background: #ffffff;
+  border-color: #000000;
+  box-shadow: none;
+}
+body.theme-highcontrast .btn-primary {
+  background: #000000;
+  border-color: #000000;
+  color: #ffffff;
+}
+body.theme-highcontrast .btn-secondary {
+  background: #ffffff;
+  border-color: #000000;
+  color: #000000;
+}
+body.theme-highcontrast .mode-badge {
+  background: #000000;
+  color: #ffffff;
+  border-color: #000000;
+}
+body.theme-highcontrast .cat-progress-outer {
+  background: #d1d5db;
+}
+body.theme-highcontrast .cat-progress-inner {
+  background: #000000;
 }
 
 /* Dark mode */
 body.dark {
-  background-color: #121212;
-  color: #e0e0e0;
+  background-color: #020617;
+  color: #e5e7eb;
 }
+
+body.dark .card {
+  background: #111827;
+  border-color: #1f2937;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.6);
+}
+
+body.dark #status {
+  color: #9ca3af;
+}
+
 body.dark .option-label {
-  background:#1e1e1e;
-  border-color:#444;
-}
-body.dark .option-label.correct { background:#2d6a2d; }
-body.dark .option-label.incorrect { background:#6a2d2d; }
-
-
-/* Mobile Mode: optimized layout for phones */
-body.mobile-mode {
-  max-width: 100%;
-  margin: 0;
-  padding: 8px;
-  font-size: 16px;
+  background: #111827;
+  border-color: #374151;
 }
 
-body.mobile-mode h1 {
-  font-size: 1.4rem;
+body.dark .option-label.correct {
+  background: #065f46;
+  border-color: #22c55e;
 }
 
-body.mobile-mode .card {
-  margin-top: 12px;
-  padding: 12px;
+body.dark .option-label.incorrect {
+  background: #7f1d1d;
+  border-color: #f97373;
 }
 
-body.mobile-mode .controls {
-  flex-direction: column;
+body.dark .weak-badge {
+  background: #7f1d1d;
+  color: #fee2e2;
 }
 
+body.dark .weak-practice-btn {
+  background: #111827;
+  border-color: #9ca3af;
+  color: #e5e7eb;
+}
+
+body.dark .btn-primary {
+  background: #4f46e5;
+  border-color: #6366f1;
+  color: #f9fafb;
+}
+
+body.dark .btn-secondary {
+  background: #111827;
+  border-color: #374151;
+  color: #e5e7eb;
+}
+
+body.dark .btn-ghost {
+  color: #e5e7eb;
+}
+
+body.dark button:hover:not(:disabled) {
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.8);
+}
 body.mobile-mode .controls button {
   width: 100%;
   box-sizing: border-box;
@@ -144,99 +622,22 @@ body.mobile-mode #modeControls label {
   margin: 4px 0;
 }
 
-
-#modeIndicator {
-  /* base style handled inline; we only use classes for color */
+#modeControls .mode-item {
+  margin-top: 6px;
 }
-
-/* Mode color coding */
-.mode-random {
-  color: #0066cc;
-}
-.mode-norepeat {
-  color: #b8860b;
-}
-.mode-exam {
-  color: #cc0000;
-}
-
-
-
-/* Weak areas spotlight */
-.weak-area-item {
-  margin-top: 4px;
+#modeControls label {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
   gap: 6px;
+  font-size: 0.95rem;
 }
 
-.weak-badge {
-  display: inline-block;
-  padding: 3px 8px;
-  border-radius: 999px;
-  font-size: 0.85rem;
-  background: #ffe0e0;
-  color: #a00000;
-}
-
-.weak-practice-btn {
-  padding: 4px 8px;
-  border-radius: 6px;
-  border: 1px solid #888;
-  background: #f9f9f9;
-  cursor: pointer;
-  font-size: 0.8rem;
-}
-
-body.dark .weak-badge {
-  background: #5a1a1a;
-  color: #ffe0e0;
-}
-
-body.dark .weak-practice-btn {
-  background: #333;
-  border-color: #aaa;
-  color: #eee;
-}
-
-
-/* Progress bar */
-#progressContainer {
-  margin: 6px 0 8px 0;
-}
-
-#progressLabel {
-  font-size: 0.9rem;
-  margin-bottom: 4px;
-}
-
-#progressBarOuter {
-  width: 100%;
-  height: 10px;
-  background: #e0e0e0;
-  border-radius: 5px;
-  overflow: hidden;
-}
-
-#progressBarInner {
-  height: 100%;
-  width: 0%;
-  background: #4caf50;
-  transition: width 0.2s ease-out;
-}
-
-/* Recent accuracy dots */
-#recentAccuracy {
-  margin: 6px 0 4px 0;
-  font-size: 0.85rem;
-}
-
-#recentAccuracy span#recentAccuracy span#recentAccuracy span</style>
+</style>
 </head>
 <body>
-<button id="darkToggle" style="position:fixed;top:10px;right:10px;z-index:999;">Dark Mode</button>
-<button id="mobileToggle" style="position:fixed;top:50px;right:10px;z-index:999;">Mobile Mode</button>
+<button id="darkToggle" class="btn-ghost" style="position:fixed;top:10px;right:10px;z-index:999;">Dark Mode</button>
+<button id="mobileToggle" class="btn-ghost" style="position:fixed;top:50px;right:10px;z-index:999;">Mobile Mode</button>
+<button id="fullscreenToggle" class="btn-ghost" style="position:fixed;top:90px;right:10px;z-index:999;">Full screen</button>
 <h1>Amateur Radio Exam Practice</h1>
 
 <div class="card">
@@ -246,11 +647,22 @@ body.dark .weak-practice-btn {
     <label style="margin-left: 10px;"><input type="radio" name="lang" id="langFr" value="fr"> Français</label>
   </div>
 
+  <div id="themeControls" style="margin-bottom:10px;">
+    <label for="themeSelect">Theme:</label>
+    <select id="themeSelect">
+      <option value="default">Default</option>
+      <option value="ocean">Ocean</option>
+      <option value="forest">Forest</option>
+      <option value="amber">Amber</option>
+      <option value="highcontrast">High contrast</option>
+    </select>
+  </div>
+
   <p id="step2Text"><strong>Step 2:</strong> Load the official ISED question bank file <code>amat_basic_quest_delim.txt</code> or a compatible CSV file.</p>
   <div id="officialLoadButtons" class="controls" style="margin-top:6px;margin-bottom:6px;">
-    <button type="button" id="loadBasicBtn">Load official Basic bank (from GitHub)</button>
-    <button type="button" id="loadAdvancedBtn">Load official Advanced bank (from GitHub)</button>
-    <button type="button" id="downloadCsvBtn">Download explanation CSV (from GitHub)</button>
+    <button type="button" id="loadBasicBtn" class="btn-primary">Load official Basic bank (from GitHub)</button>
+    <button type="button" id="loadAdvancedBtn" class="btn-primary">Load official Advanced bank (from GitHub)</button>
+    <button type="button" id="downloadCsvBtn" class="btn-secondary">Download explanation CSV (from GitHub)</button>
   </div>
   <!-- New bilingual GitHub note -->
   <p id="githubNote" style="font-size:0.85rem; color:#555; margin-top:4px;">
@@ -263,14 +675,34 @@ body.dark .weak-practice-btn {
 
   <p id="step3Text"><strong>Step 3:</strong> Select the desired question mode (Random, No repeats, or Exam).</p>
   <div id="modeControls" style="margin-top:8px;">
-    <strong id="modeLabel">Question mode:</strong>
-    <label><input type="radio" name="mode" id="modeRandom" value="random" checked> <span id="labelRandom">Random</span></label>
-    <label style="margin-left: 10px;"><input type="radio" name="mode" id="modeNoRepeat" value="norepeat"> <span id="labelNoRepeat">No repeats until all questions used</span></label>
-    <label style="margin-left: 10px;"><input type="radio" name="mode" id="modeExam" value="exam"> <span id="labelExam">Exam (up to 100 questions)</span></label>
-    <label style="margin-left: 10px;"><input type="radio" name="mode" id="modeCategory" value="category"> <span id="labelCategory">Category training</span></label>
+  <strong id="modeLabel">Question mode:</strong>
+
+  <div class="mode-item">
+    <label><input type="radio" name="mode" id="modeRandom" value="random" checked>
+      <span id="labelRandom">Random</span>
+    </label>
   </div>
-  <p id="profileIndicator" style="margin-top:6px;font-style:italic;"></p>
-  <p id="modeIndicator" style="margin-top:4px;font-style:italic;"></p>
+
+  <div class="mode-item">
+    <label><input type="radio" name="mode" id="modeNoRepeat" value="norepeat">
+      <span id="labelNoRepeat">No repeats until all questions used</span>
+    </label>
+  </div>
+
+  <div class="mode-item">
+    <label><input type="radio" name="mode" id="modeExam" value="exam">
+      <span id="labelExam">Exam (up to 100 questions)</span>
+    </label>
+  </div>
+
+  <div class="mode-item">
+    <label><input type="radio" name="mode" id="modeCategory" value="category">
+      <span id="labelCategory">Category training</span>
+    </label>
+  </div>
+</div>
+
+  
   <div id="categoryTrainingContainer" style="margin-top:8px; display:none;">
     <strong id="categoryTrainingTitle">Category training</strong>
     <div id="categoryCheckboxes" style="margin-top:4px;"></div>
@@ -280,9 +712,11 @@ body.dark .weak-practice-btn {
 </div>
 
 <div class="card" id="quizCard" style="display:none;">
+<div id="stickyQuestionHeader">
 <div id="questionHeader">
 <span id="questionCounter"></span>
 </div>
+<div id="modeIndicator" style="text-align:center; margin:6px 0;"></div>
 
 <!-- Progress & motivation UI -->
 <div id="progressContainer">
@@ -292,6 +726,7 @@ body.dark .weak-practice-btn {
   </div>
 </div>
 <div id="bankQuestionId"></div>
+</div>
 <div id="questionText"></div>
 <form id="optionsForm">
 <div id="options"></div>
@@ -301,12 +736,13 @@ body.dark .weak-practice-btn {
 <div id="explanation"></div>
 
 <div class="controls">
-<button id="checkBtn">Check Answer</button>
-<button id="nextBtn" disabled>Next Question</button>
-<button id="resetBtn" type="button">Reset</button>
+<button id="checkBtn" class="btn-primary">Check Answer</button>
+<button id="nextBtn" class="btn-primary" disabled>Next Question</button>
+<button id="resetBtn" type="button" class="btn-secondary">Reset</button>
 </div>
 
 <div id="score"></div>
+<div id="memoryConsolidation"></div>
 <div id="categoryReport"></div>
 </div>
 
@@ -418,10 +854,27 @@ let categoryStats = {};
 let cycleAnsweredCount = 0;
 
 let currentLanguage = 'en';
+let storedLang = null;
+try {
+  storedLang = window.localStorage ? window.localStorage.getItem('hamExamLang') : null;
+} catch (e) {
+  storedLang = null;
+}
+if (storedLang === 'en' || storedLang === 'fr') {
+  currentLanguage = storedLang;
+}
+
+let currentTheme = 'default';
 let selectionMode = 'random';
 let questionSequence = [];
 let questionSequencePosition = 0;
 let isMobileMode = false;
+let isFullScreen = false;
+
+let lastBankSource = null; // 'official-basic', 'official-advanced', 'official-other', 'local'
+let lastBankUrl = null;
+let lastBankFileName = null;
+let lastBankText = null;
 
 const UI_STRINGS = {
   en: {
@@ -433,6 +886,7 @@ const UI_STRINGS = {
     loadBasicBtn: 'Load official Basic bank (from GitHub)',
     loadAdvancedBtn: 'Load official Advanced bank (from GitHub)',
     githubNote: 'Requires internet to load from GitHub.',
+    localFileNote: 'Use this option to load a local file.',
     modeLabel: 'Question mode:',
     randomLabel: 'Random',
     noRepeatLabel: 'No repeats until all questions used',
@@ -473,6 +927,12 @@ const UI_STRINGS = {
     retakeWrongTitle: 'Retake wrong questions',
     retakeWrongBtn: 'Retake only wrong questions',
     retakeWrongDesc: 'Build a new quiz using only the questions you missed in this exam.',
+    examReviewTitle: 'Exam review',
+    examReviewIntro: 'Summary of each question in this exam set:',
+    examReviewColQ: 'Question',
+    examReviewColResult: 'Result',
+    examReviewResultCorrect: 'Correct',
+    examReviewResultIncorrect: 'Incorrect',
     statusRetakeWrong: 'Retake mode: practicing only questions you got wrong in the last exam.',
     selectAnswerPrompt: 'Please select an answer.',
     loadedMessage: 'Loaded {N} questions successfully.',
@@ -482,8 +942,6 @@ const UI_STRINGS = {
     questionCounterLabel: 'Question',
     mobileOn: 'Mobile Mode',
     mobileOff: 'Desktop Mode',
-    profileBasic: 'Profile: Basic bank',
-    profileAdvanced: 'Profile: Advanced bank',
     modeRandomIndicator: '🔄 Current mode: Random',
     modeNoRepeatIndicator: '♻️ Current mode: No repeats',
     modeExamIndicator: '🎯 Current mode: Exam',
@@ -503,6 +961,8 @@ const UI_STRINGS = {
     supportReadmeUrl: 'https://raw.githubusercontent.com/Fabiolus2020/HamExamTrainer2025/main/README.md',
     downloadCsvBtn: 'Download explanation CSV (from GitHub)',
     licenseFooterHtml: 'Licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer">CC BY-NC-SA 4.0</a> &ndash; Non-commercial use only',
+fullScreenOn: 'Full screen',
+fullScreenOff: 'Exit full screen',
   },
   fr: {
     title: 'Pratique pour l’examen de radioamateur',
@@ -513,6 +973,7 @@ const UI_STRINGS = {
     loadBasicBtn: 'Charger la banque de base officielle (depuis GitHub)',
     loadAdvancedBtn: 'Charger la banque avancée officielle (depuis GitHub)',
     githubNote: 'Nécessite une connexion Internet pour charger depuis GitHub.',
+    localFileNote: 'Utilisez cette option pour charger un fichier local.',
     modeLabel: 'Mode de questions :',
     randomLabel: 'Aléatoire',
     noRepeatLabel: 'Sans répétition jusqu’à ce que toutes les questions soient utilisées',
@@ -550,6 +1011,12 @@ const UI_STRINGS = {
     retakeWrongTitle: 'Revoir les mauvaises réponses',
     retakeWrongBtn: 'Reprendre seulement les mauvaises réponses',
     retakeWrongDesc: 'Créer un nouveau quiz uniquement avec les questions ratées lors de cet examen.',
+    examReviewTitle: 'Revue de l’examen',
+    examReviewIntro: 'Résumé de chaque question de cet examen :',
+    examReviewColQ: 'Question',
+    examReviewColResult: 'Résultat',
+    examReviewResultCorrect: 'Bonne réponse',
+    examReviewResultIncorrect: 'Mauvaise réponse',
     statusRetakeWrong: 'Mode révision : vous pratiquez seulement les questions ratées lors du dernier examen.',
     selectAnswerPrompt: 'Veuillez sélectionner une réponse.',
     loadedMessage: 'Chargé {N} questions avec succès.',
@@ -560,8 +1027,6 @@ const UI_STRINGS = {
     questionCounterLabel: 'Question',
     mobileOn: 'Mode mobile',
     mobileOff: 'Mode standard',
-    profileBasic: 'Profil : Banque de base',
-    profileAdvanced: 'Profil : Banque avancée',
     modeRandomIndicator: '🔄 Mode actuel : Aléatoire',
     modeNoRepeatIndicator: '♻️ Mode actuel : Sans répétition',
     modeExamIndicator: '🎯 Mode actuel : Examen',
@@ -580,23 +1045,26 @@ const UI_STRINGS = {
     supportReadmeText: '📘 Consulter le README sur GitHub',
     supportReadmeUrl: 'https://raw.githubusercontent.com/Fabiolus2020/HamExamTrainer2025/main/README.md',
     downloadCsvBtn: 'Télécharger le CSV d’explications (depuis GitHub)',
-    licenseFooterHtml: 'Sous licence <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer">CC BY-NC-SA 4.0</a> &ndash; Utilisation non commerciale uniquement'
+    licenseFooterHtml: 'Sous licence <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer">CC BY-NC-SA 4.0</a> &ndash; Utilisation non commerciale uniquement',
+    fullScreenOn: 'Plein écran',
+    fullScreenOff: 'Quitter le mode plein écran'
   }
 };
 
 
 
-function updateProfileIndicator() {
-  if (!profileIndicatorEl) return;
-  const strings = UI_STRINGS[currentLanguage] || UI_STRINGS.en;
-  if (!questions || questions.length === 0) {
-    profileIndicatorEl.textContent = '';
-    return;
-  }
-  if (examProfile === 'advanced') {
-    profileIndicatorEl.textContent = strings.profileAdvanced || '';
+function getLoadedMessageWithProfile(strings) {
+  const total = (questions && questions.length) ? questions.length : 0;
+  if (currentLanguage === 'fr') {
+    const profileLabel = examProfile === 'advanced'
+      ? 'banque avancée'
+      : 'banque de base';
+    return `Chargé ${total} questions avec succès depuis la ${profileLabel}.`;
   } else {
-    profileIndicatorEl.textContent = strings.profileBasic || '';
+    const profileLabel = examProfile === 'advanced'
+      ? 'Advanced bank'
+      : 'Basic bank';
+    return `Loaded ${total} questions successfully from the ${profileLabel}.`;
   }
 }
 
@@ -604,33 +1072,70 @@ function updateModeIndicator() {
   if (!modeIndicatorEl) return;
   // Only show mode indicator once a bank is loaded
   if (!questions || questions.length === 0) {
-    modeIndicatorEl.textContent = '';
-    modeIndicatorEl.classList.remove('mode-random', 'mode-norepeat', 'mode-exam', 'mode-category');
+    modeIndicatorEl.innerHTML = '';
     return;
   }
+
   const strings = UI_STRINGS[currentLanguage] || UI_STRINGS.en;
-  let textVal = '';
-  let cls = '';
+  let badgeClass = '';
+  let label = '';
+
   if (selectionMode === 'random') {
-    textVal = strings.modeRandomIndicator;
-    cls = 'mode-random';
+    label = strings.modeRandomIndicator;
+    badgeClass = 'badge-random';
   } else if (selectionMode === 'norepeat') {
-    textVal = strings.modeNoRepeatIndicator;
-    cls = 'mode-norepeat';
+    label = strings.modeNoRepeatIndicator;
+    badgeClass = 'badge-norepeat';
   } else if (selectionMode === 'exam') {
-    textVal = strings.modeExamIndicator;
-    cls = 'mode-exam';
+    label = strings.modeExamIndicator;
+    badgeClass = 'badge-exam';
   } else if (selectionMode === 'category') {
-    textVal = strings.modeCategoryIndicator || '';
-    cls = 'mode-category';
+    label = strings.modeCategoryIndicator || '';
+    badgeClass = 'badge-category';
   } else if (selectionMode === 'wrongonly') {
-    textVal = strings.modeWrongOnlyIndicator || '';
-    cls = 'mode-exam';
+    label = strings.modeWrongOnlyIndicator || '';
+    badgeClass = 'badge-wrongonly';
   }
-  modeIndicatorEl.textContent = textVal;
-  modeIndicatorEl.classList.remove('mode-random', 'mode-norepeat', 'mode-exam', 'mode-category');
-  if (cls) modeIndicatorEl.classList.add(cls);
+
+  if (!label) {
+    modeIndicatorEl.innerHTML = '';
+    return;
+  }
+
+  modeIndicatorEl.innerHTML = `<span class="mode-badge ${badgeClass}">${label}</span>`;
 }
+
+function applyTheme() {
+  const body = document.body;
+  body.classList.remove('theme-default', 'theme-ocean', 'theme-forest', 'theme-amber', 'theme-highcontrast');
+  const cls = 'theme-' + (currentTheme || 'default');
+  body.classList.add(cls);
+}
+
+
+function toggleFullscreen() {
+  const doc = document;
+  const docEl = document.documentElement;
+  if (!doc.fullscreenElement && !doc.webkitFullscreenElement && !doc.msFullscreenElement) {
+    if (docEl.requestFullscreen) {
+      docEl.requestFullscreen();
+    } else if (docEl.webkitRequestFullscreen) {
+      docEl.webkitRequestFullscreen();
+    } else if (docEl.msRequestFullscreen) {
+      docEl.msRequestFullscreen();
+    }
+  } else {
+    if (doc.exitFullscreen) {
+      doc.exitFullscreen();
+    } else if (doc.webkitExitFullscreen) {
+      doc.webkitExitFullscreen();
+    } else if (doc.msExitFullscreen) {
+      doc.msExitFullscreen();
+    }
+  }
+}
+
+
 function applyLanguage() {
   const strings = UI_STRINGS[currentLanguage] || UI_STRINGS.en;
   if (appTitleEl) appTitleEl.textContent = strings.title;
@@ -657,7 +1162,9 @@ function applyLanguage() {
     categoryHintEl.textContent = strings.categoryHint;
   }
   // New: bilingual GitHub note
-  if (document.getElementById("localFileNote") && strings.localFileNote) document.getElementById("localFileNote").textContent = strings.localFileNote;
+  if (document.getElementById("localFileNote") && strings.localFileNote) {
+    document.getElementById("localFileNote").textContent = strings.localFileNote;
+  }
 
   if (githubNoteEl && strings.githubNote) {
     githubNoteEl.textContent = strings.githubNote;
@@ -695,12 +1202,13 @@ function applyLanguage() {
   if (mobileToggleBtn) {
     mobileToggleBtn.textContent = isMobileMode ? strings.mobileOff : strings.mobileOn;
   }
+if (fullscreenToggleBtn && strings.fullScreenOn && strings.fullScreenOff) {
+  fullscreenToggleBtn.textContent = isFullScreen ? strings.fullScreenOff : strings.fullScreenOn;
+}
   if (statusEl && totalAsked === 0 && (!questions || questions.length === 0)) {
     statusEl.textContent = strings.statusNoFile;
   }
-  // Update profile indicator based on current profile and language
-  updateProfileIndicator();
-  // Update mode indicator based on current mode and language
+    // Update mode indicator based on current mode and language
   updateModeIndicator();
   // If questions are loaded and we are in category mode, keep the container visible; otherwise hide it
   updateCategoryTrainingVisibility();
@@ -739,6 +1247,7 @@ const modeExamRadio = document.getElementById('modeExam');
 const langEnRadio = document.getElementById('langEn');
 const langFrRadio = document.getElementById('langFr');
 const appTitleEl = document.querySelector('h1');
+const themeSelectEl = document.getElementById('themeSelect');
 const step1TextEl = document.getElementById('step1Text');
 const step2TextEl = document.getElementById('step2Text');
 const step3TextEl = document.getElementById('step3Text');
@@ -748,11 +1257,11 @@ const labelRandomEl = document.getElementById('labelRandom');
 const labelNoRepeatEl = document.getElementById('labelNoRepeat');
 const labelExamEl = document.getElementById('labelExam');
 const labelCategoryEl = document.getElementById('labelCategory');
-const profileIndicatorEl = document.getElementById('profileIndicator');
 const modeIndicatorEl = document.getElementById('modeIndicator');
 const wrongTitleEl = document.getElementById('wrongTitle');
 const darkToggleBtn = document.getElementById('darkToggle');
 const mobileToggleBtn = document.getElementById('mobileToggle');
+const fullscreenToggleBtn = document.getElementById('fullscreenToggle');
 const modeCategoryRadio = document.getElementById('modeCategory');
 const categoryTrainingContainer = document.getElementById('categoryTrainingContainer');
 const categoryCheckboxesEl = document.getElementById('categoryCheckboxes');
@@ -762,9 +1271,23 @@ const githubNoteEl = document.getElementById('githubNote'); // NEW: GitHub note 
 
 // Hook up language radio buttons
 if (langEnRadio && langFrRadio) {
+  // Set initial checked state based on stored / current language
+  if (currentLanguage === 'fr') {
+    langFrRadio.checked = true;
+    langEnRadio.checked = false;
+  } else {
+    langEnRadio.checked = true;
+    langFrRadio.checked = false;
+  }
+
   langEnRadio.addEventListener('change', () => {
     if (langEnRadio.checked) {
       currentLanguage = 'en';
+      try {
+        if (window.localStorage) {
+          window.localStorage.setItem('hamExamLang', currentLanguage);
+        }
+      } catch (e) {}
       applyLanguage();
       if (currentQuestionIndex !== null) {
         // Redraw current question in new language
@@ -775,6 +1298,11 @@ if (langEnRadio && langFrRadio) {
   langFrRadio.addEventListener('change', () => {
     if (langFrRadio.checked) {
       currentLanguage = 'fr';
+      try {
+        if (window.localStorage) {
+          window.localStorage.setItem('hamExamLang', currentLanguage);
+        }
+      } catch (e) {}
       applyLanguage();
       if (currentQuestionIndex !== null) {
         showCurrentQuestionOnly();
@@ -783,17 +1311,25 @@ if (langEnRadio && langFrRadio) {
   });
 }
 
+if (themeSelectEl) {
+  themeSelectEl.addEventListener('change', () => {
+    currentTheme = themeSelectEl.value || 'default';
+    applyTheme();
+  });
+}
+
 modeRandomRadio.addEventListener('change', () => {
   if (modeRandomRadio.checked) {
     selectionMode = 'random';
     const strings = UI_STRINGS[currentLanguage] || UI_STRINGS.en;
     if (questions && questions.length > 0) {
-      statusEl.textContent = strings.loadedMessage.replace('{N}', questions.length);
+      statusEl.textContent = getLoadedMessageWithProfile(strings);
     } else {
       statusEl.textContent = strings.statusNoFile;
     }
     updateModeIndicator();
     updateCategoryTrainingVisibility();
+    saveSessionState();
   }
 });
 
@@ -803,12 +1339,13 @@ modeNoRepeatRadio.addEventListener('change', () => {
     resetQuestionSequence();
     const strings = UI_STRINGS[currentLanguage] || UI_STRINGS.en;
     if (questions && questions.length > 0) {
-      statusEl.textContent = strings.loadedMessage.replace('{N}', questions.length);
+      statusEl.textContent = getLoadedMessageWithProfile(strings);
     } else {
       statusEl.textContent = strings.statusNoFile;
     }
     updateModeIndicator();
     updateCategoryTrainingVisibility();
+    saveSessionState();
   }
 });
 
@@ -822,14 +1359,18 @@ modeExamRadio.addEventListener('change', () => {
     wrongQuestionIndices = new Set();
     updateScore();
 updateProgressUI();
+  saveSessionState();
+
     resetQuestionSequence();
     if (categoryReportEl) {
       categoryReportEl.innerHTML = '';
     }
     statusEl.textContent = (UI_STRINGS[currentLanguage] || UI_STRINGS.en).statusExamMode;
+    saveSessionState();
     nextBtn.disabled = false;
     updateModeIndicator();
     updateCategoryTrainingVisibility();
+    saveSessionState();
   }
 });
 
@@ -845,11 +1386,12 @@ if (modeCategoryRadio) {
       }
       // Reset stats like a focused training session, but keep overall totals if desired
       resetQuestionSequence();
-      statusEl.textContent = strings.loadedMessage.replace('{N}', questions.length);
+      statusEl.textContent = getLoadedMessageWithProfile(strings);
       // (Re)build the list of category checkboxes whenever we enter category mode
       buildCategoryTrainingUI();
       updateModeIndicator();
       updateCategoryTrainingVisibility();
+      saveSessionState();
     }
   });
 }
@@ -859,6 +1401,8 @@ const categoryReportEl = document.getElementById('categoryReport');
 // Initial language apply once the full DOM is ready (ensures footer hyperlink is active)
 document.addEventListener('DOMContentLoaded', () => {
   applyLanguage();
+  applyTheme();
+  tryRestoreSession();
 });
 
 fileInput.addEventListener('change', handleFileSelect);
@@ -886,7 +1430,7 @@ function loadOfficialBank(url) {
         questions = parsed;
         detectProfileFromQuestions(questions);
         applyLanguage();
-        statusEl.textContent = strings.loadedMessage.replace('{N}', questions.length);
+        statusEl.textContent = getLoadedMessageWithProfile(strings);
         quizCard.style.display = 'block';
 
         totalAsked = 0;
@@ -894,13 +1438,26 @@ function loadOfficialBank(url) {
         recentResults = [];
         wrongQuestionIndices = new Set();
         updateScore();
-updateProgressUI();
+        updateProgressUI();
 
         resetQuestionSequence();
         resetFeedback();
         clearQuestion();
         nextBtn.disabled = false;
         checkBtn.disabled = true;
+
+        // Track bank source for session restore (official)
+        if (url === OFFICIAL_BASIC_URL) {
+          lastBankSource = 'official-basic';
+        } else if (url === OFFICIAL_ADVANCED_URL) {
+          lastBankSource = 'official-advanced';
+        } else {
+          lastBankSource = 'official-other';
+        }
+        lastBankUrl = url;
+        lastBankFileName = null;
+        lastBankText = null;
+        saveSessionState();
       } catch (err) {
         console.error(err);
         statusEl.textContent = strings.statusErrorFile;
@@ -1021,7 +1578,7 @@ quizCard.style.display = 'none';
 const strings = UI_STRINGS[currentLanguage] || UI_STRINGS.en;
 detectProfileFromQuestions(questions);
 applyLanguage();
-statusEl.textContent = strings.loadedMessage.replace('{N}', questions.length);
+statusEl.textContent = getLoadedMessageWithProfile(strings);
 quizCard.style.display = 'block';
 
 totalAsked = 0;
@@ -1036,6 +1593,13 @@ resetFeedback();
 clearQuestion();
 nextBtn.disabled = false;
 checkBtn.disabled = true;
+
+// Track bank source for session restore (local file)
+lastBankSource = 'local';
+lastBankUrl = null;
+lastBankFileName = file.name || null;
+lastBankText = text;
+saveSessionState();
 }
 } catch (err) {
 console.error(err);
@@ -1458,6 +2022,24 @@ function resetCategoryStatsForExam() {
 }
 
 
+function getBankHeaderText(q) {
+  if (!q || !q.bankID || !q.bankID.trim()) return '';
+  const strings = UI_STRINGS[currentLanguage] || UI_STRINGS.en;
+  const baseLabel = (currentLanguage === 'fr')
+    ? 'ID de question (banque)'
+    : 'BankQuestionID';
+  const catInfo = getCurrentCategoryInfo();
+  let catLabel = null;
+  if (q.category && catInfo && catInfo[q.category]) {
+    const labelObj = catInfo[q.category];
+    catLabel = labelObj[currentLanguage] || labelObj.en || q.category;
+  }
+  if (catLabel) {
+    return `${baseLabel}: ${q.bankID} — ${catLabel}`;
+  }
+  return `${baseLabel}: ${q.bankID}`;
+}
+
 function showNextQuestion() {
 if (questions.length === 0) return;
 
@@ -1502,11 +2084,9 @@ currentQuestionIndex = index;
 const q = questions[index];
 
 
-// Show BankQuestionID above the question (if present)
-if (q.bankID && q.bankID.trim() !== '') {
-bankQuestionIdEl.textContent = `BankQuestionID: ${q.bankID}`;
-} else {
-bankQuestionIdEl.textContent = '';
+// Show BankQuestionID + category above the question (if present)
+if (typeof bankQuestionIdEl !== 'undefined' && bankQuestionIdEl) {
+  bankQuestionIdEl.textContent = getBankHeaderText(q);
 }
 
 const strings = UI_STRINGS[currentLanguage] || UI_STRINGS.en;
@@ -1544,12 +2124,17 @@ optionsEl.appendChild(label);
 checkBtn.disabled = false;
 nextBtn.disabled = true;
 updateProgressUI();
+  saveSessionState();
 }
 
 
 function showCurrentQuestionOnly() {
   if (currentQuestionIndex === null || !questions[currentQuestionIndex]) return;
   const q = questions[currentQuestionIndex];
+
+  if (typeof bankQuestionIdEl !== 'undefined' && bankQuestionIdEl) {
+    bankQuestionIdEl.textContent = getBankHeaderText(q);
+  }
 
   const strings = UI_STRINGS[currentLanguage] || UI_STRINGS.en;
   const qText = (currentLanguage === 'fr' && q.question_fr) ? q.question_fr : (q.question_en || q.question);
@@ -1744,6 +2329,219 @@ function updateProgressUI() {
   progressBarInnerEl.style.width = isNaN(percent) ? '0%' : percent + '%';
 }
 
+
+function saveSessionState() {
+  try {
+    if (!window.localStorage) return;
+  } catch (e) {
+    return;
+  }
+
+  // If no questions are loaded, clear any previous session
+  if (!questions || questions.length === 0) {
+    try {
+      window.localStorage.removeItem('hamExamSession');
+    } catch (e) {}
+    return;
+  }
+
+  const state = {
+    v: 1,
+    ts: Date.now(),
+    examProfile: examProfile,
+    selectionMode: selectionMode,
+    currentLanguage: currentLanguage,
+    currentTheme: currentTheme,
+    totalAsked: totalAsked,
+    totalCorrect: totalCorrect,
+    recentResults: recentResults || [],
+    questionSequence: questionSequence || [],
+    questionSequencePosition: typeof questionSequencePosition === 'number' ? questionSequencePosition : 0,
+    currentQuestionIndex: typeof currentQuestionIndex === 'number' ? currentQuestionIndex : null,
+    wrongQuestionIndices: Array.from(wrongQuestionIndices || []),
+    categorySelection: Array.from(categorySelection || []),
+    categoryStats: categoryStats || {},
+    cycleAnsweredCount: typeof cycleAnsweredCount === 'number' ? cycleAnsweredCount : 0,
+    lastBankSource: lastBankSource || null,
+    lastBankUrl: lastBankUrl || null,
+    lastBankFileName: lastBankFileName || null,
+    lastBankText: lastBankSource === 'local' ? (lastBankText || null) : null
+  };
+
+  try {
+    window.localStorage.setItem('hamExamSession', JSON.stringify(state));
+  } catch (e) {
+    // Ignore quota or serialization errors
+  }
+}
+
+function clearSessionState() {
+  try {
+    if (window.localStorage) {
+      window.localStorage.removeItem('hamExamSession');
+    }
+  } catch (e) {}
+}
+
+function applyRestoredState(state, parsedQuestions) {
+  if (!parsedQuestions || parsedQuestions.length === 0) return;
+
+  questions = parsedQuestions;
+
+  examProfile = state.examProfile || examProfile || 'basic';
+  selectionMode = state.selectionMode || 'random';
+  currentTheme = state.currentTheme || currentTheme || 'default';
+
+  totalAsked = state.totalAsked || 0;
+  totalCorrect = state.totalCorrect || 0;
+  recentResults = Array.isArray(state.recentResults) ? state.recentResults : [];
+  questionSequence = Array.isArray(state.questionSequence) ? state.questionSequence : [];
+  questionSequencePosition = typeof state.questionSequencePosition === 'number'
+    ? state.questionSequencePosition
+    : 0;
+  currentQuestionIndex = (typeof state.currentQuestionIndex === 'number' && state.currentQuestionIndex >= 0)
+    ? state.currentQuestionIndex
+    : null;
+  wrongQuestionIndices = new Set(Array.isArray(state.wrongQuestionIndices) ? state.wrongQuestionIndices : []);
+  categorySelection = new Set(Array.isArray(state.categorySelection) ? state.categorySelection : []);
+  categoryStats = state.categoryStats || {};
+  cycleAnsweredCount = state.cycleAnsweredCount || 0;
+
+  // Restore bank meta
+  lastBankSource = state.lastBankSource || null;
+  lastBankUrl = state.lastBankUrl || null;
+  lastBankFileName = state.lastBankFileName || null;
+  lastBankText = state.lastBankSource === 'local' ? (state.lastBankText || null) : null;
+
+  // Reflect selection mode in radios
+  if (typeof modeRandomRadio !== 'undefined' && modeRandomRadio) {
+    modeRandomRadio.checked = (selectionMode === 'random');
+  }
+  if (typeof modeNoRepeatRadio !== 'undefined' && modeNoRepeatRadio) {
+    modeNoRepeatRadio.checked = (selectionMode === 'norepeat');
+  }
+  if (typeof modeExamRadio !== 'undefined' && modeExamRadio) {
+    modeExamRadio.checked = (selectionMode === 'exam');
+  }
+  if (typeof modeCategoryRadio !== 'undefined' && modeCategoryRadio) {
+    modeCategoryRadio.checked = (selectionMode === 'category');
+  }
+
+  // Show quiz card
+  if (typeof quizCard !== 'undefined' && quizCard) {
+    quizCard.style.display = 'block';
+  }
+
+  applyLanguage();
+  applyTheme();
+
+  const strings = UI_STRINGS[currentLanguage] || UI_STRINGS.en;
+  statusEl.textContent = getLoadedMessageWithProfile(strings);
+
+  updateModeIndicator();
+  updateCategoryTrainingVisibility();
+  updateScore();
+  updateProgressUI();
+
+  if (selectionMode === 'category' && typeof buildCategoryTrainingUI === 'function') {
+    buildCategoryTrainingUI();
+  }
+
+  if (currentQuestionIndex !== null) {
+    showCurrentQuestionOnly();
+  } else {
+    clearQuestion();
+  }
+
+  if (typeof checkBtn !== 'undefined' && checkBtn) {
+    checkBtn.disabled = false;
+  }
+  if (typeof nextBtn !== 'undefined' && nextBtn) {
+    nextBtn.disabled = false;
+  }
+
+  // Ensure we keep this normalized state
+  saveSessionState();
+}
+
+function tryRestoreSession() {
+  let raw = null;
+  try {
+    raw = window.localStorage ? window.localStorage.getItem('hamExamSession') : null;
+  } catch (e) {
+    return;
+  }
+  if (!raw) return;
+
+  let state = null;
+  try {
+    state = JSON.parse(raw);
+  } catch (e) {
+    return;
+  }
+  if (!state || !state.v) return;
+
+  const strings = UI_STRINGS[currentLanguage] || UI_STRINGS.en;
+  const promptText =
+    strings.restorePrompt ||
+    'A previous session was found. Do you want to continue where you left off?';
+
+  const ok = window.confirm(promptText);
+  if (!ok) {
+    return;
+  }
+
+  // Update meta before attempting reload
+  lastBankSource = state.lastBankSource || null;
+  lastBankUrl = state.lastBankUrl || null;
+  lastBankFileName = state.lastBankFileName || null;
+  lastBankText = state.lastBankSource === 'local' ? (state.lastBankText || null) : null;
+
+  if (state.lastBankSource === 'official-basic' ||
+      state.lastBankSource === 'official-advanced' ||
+      state.lastBankSource === 'official-other') {
+    if (!state.lastBankUrl) return;
+    statusEl.textContent = strings.statusErrorFile ? strings.statusErrorFile : 'Loading previous session...';
+    fetch(state.lastBankUrl)
+      .then(resp => {
+        if (!resp.ok) throw new Error('HTTP ' + resp.status);
+        return resp.text();
+      })
+      .then(txt => {
+        const parsed = parseISEDDelimitedQuestions(txt);
+        if (!parsed || parsed.length === 0) {
+          clearSessionState();
+          return;
+        }
+        applyRestoredState(state, parsed);
+      })
+      .catch(err => {
+        console.error(err);
+        clearSessionState();
+      });
+  } else if (state.lastBankSource === 'local' && state.lastBankText) {
+    let parsed = null;
+    const lowerName = (state.lastBankFileName || '').toLowerCase();
+    try {
+      if (lowerName.endsWith('.txt')) {
+        parsed = parseISEDDelimitedQuestions(state.lastBankText);
+      } else {
+        parsed = parseCsvToQuestions(state.lastBankText);
+      }
+    } catch (e) {
+      console.error(e);
+      clearSessionState();
+      return;
+    }
+    if (!parsed || parsed.length === 0) {
+      clearSessionState();
+      return;
+    }
+    applyRestoredState(state, parsed);
+  }
+}
+
+
 function attachWeakAreaHandlers() {
   if (!categoryReportEl) return;
   const buttons = categoryReportEl.querySelectorAll('.weak-practice-btn');
@@ -1829,7 +2627,7 @@ function startCategoryPracticeFor(categoryCode) {
     }
   });
 
-  statusEl.textContent = strings.loadedMessage.replace('{N}', questions.length);
+  statusEl.textContent = getLoadedMessageWithProfile(strings);
 
   // Reset overall counters so this focused training starts fresh
   totalAsked = 0;
@@ -1974,136 +2772,241 @@ function resetApp() {
 
   // Re-apply language strings (English baseline after reset)
   applyLanguage();
+  clearSessionState();
 }
+
 
 function updateScore() {
-const sStrings = UI_STRINGS[currentLanguage] || UI_STRINGS.en;
-if (totalAsked === 0) {
-scoreEl.textContent = `${sStrings.scorePrefix}: –`;
-if (categoryReportEl) {
-  categoryReportEl.innerHTML = '';
-}
-} else {
-const percent = ((totalCorrect / totalAsked) * 100).toFixed(1);
-let message = `${sStrings.scorePrefix}: ${totalCorrect} / ${totalAsked} (${percent}%)`;
+  const sStrings = UI_STRINGS[currentLanguage] || UI_STRINGS.en;
 
-// Only show pass / honours result and category breakdown at the END of an exam
-if (
-  selectionMode === 'exam' &&
-  questionSequence &&
-  questionSequence.length > 0 &&
-  totalAsked === questionSequence.length
-) {
-  const p = parseFloat(percent);
-
-  // Official ISED-style wording, based on profile + language
-  if (examProfile === 'basic') {
-    if (currentLanguage === 'fr') {
-      if (p >= 80) {
-        message += ' — Qualification de base — Réussite avec mention : ' + percent + '%';
-      } else if (p >= 70) {
-        message += ' — Qualification de base — Réussite : ' + percent + '%';
-      } else {
-        message += ' — Qualification de base — Échec : ' + percent + '%';
-      }
-    } else {
-      if (p >= 80) {
-        message += ' — Basic Qualification — Pass with Honours: ' + percent + '%';
-      } else if (p >= 70) {
-        message += ' — Basic Qualification — Pass: ' + percent + '%';
-      } else {
-        message += ' — Basic Qualification — Fail: ' + percent + '%';
-      }
+  // No questions answered yet: clear score and reports
+  if (totalAsked === 0) {
+    scoreEl.textContent = `${sStrings.scorePrefix}: –`;
+    if (categoryReportEl) {
+      categoryReportEl.innerHTML = '';
     }
-  } else if (examProfile === 'advanced') {
-    if (currentLanguage === 'fr') {
-      if (p >= 70) {
-        message += ' — Qualification avancée — Réussite : ' + percent + '%';
+    const memEl0 = document.getElementById('memoryConsolidation');
+    if (memEl0) {
+      memEl0.innerHTML = '';
+    }
+    return;
+  }
+
+  const percent = (totalCorrect / Math.max(totalAsked, 1)) * 100;
+  const percentText = percent.toFixed(1);
+  let message = `${sStrings.scorePrefix}: ${totalCorrect} / ${totalAsked} (${percentText}%)`;
+
+  let examFinished = false;
+
+  // Exam-specific handling: only when we have completed the exam sequence
+  if (
+    selectionMode === 'exam' &&
+    questionSequence &&
+    questionSequence.length > 0 &&
+    typeof questionSequencePosition === 'number' &&
+    questionSequencePosition >= questionSequence.length
+  ) {
+    examFinished = true;
+    if (sStrings.statusExamComplete) {
+      statusEl.textContent = sStrings.statusExamComplete;
+    }
+
+    const p = percent;
+
+    // Official ISED-style wording, based on profile + language
+    if (examProfile === 'basic') {
+      if (currentLanguage === 'fr') {
+        if (p >= 80) {
+          message += ' — Qualification de base — Réussite avec mention : ' + percentText + '%';
+        } else if (p >= 70) {
+          message += ' — Qualification de base — Réussite : ' + percentText + '%';
+        } else {
+          message += ' — Qualification de base — Échec : ' + percentText + '%';
+        }
       } else {
-        message += ' — Qualification avancée — Échec : ' + percent + '%';
+        if (p >= 80) {
+          message += ' — Basic Qualification — Pass with Honours: ' + percentText + '%';
+        } else if (p >= 70) {
+          message += ' — Basic Qualification — Pass: ' + percentText + '%';
+        } else {
+          message += ' — Basic Qualification — Fail: ' + percentText + '%';
+        }
       }
-    } else {
-      if (p >= 70) {
-        message += ' — Advanced Qualification — Pass: ' + percent + '%';
+    } else if (examProfile === 'advanced') {
+      if (currentLanguage === 'fr') {
+        if (p >= 70) {
+          message += ' — Qualification avancée — Réussite : ' + percentText + '%';
+        } else {
+          message += ' — Qualification avancée — Échec : ' + percentText + '%';
+        }
       } else {
-        message += ' — Advanced Qualification — Fail: ' + percent + '%';
+        if (p >= 70) {
+          message += ' — Advanced Qualification — Pass: ' + percentText + '%';
+        } else {
+          message += ' — Advanced Qualification — Fail: ' + percentText + '%';
+        }
       }
     }
   }
 
-  // Build category breakdown similar to ISED report
-  if (categoryReportEl && categoryStats) {
-    let html = `<h3>${sStrings.catBreakdownTitle}</h3>`;
-    html += '<table border="1" cellpadding="4" cellspacing="0">';
-    html += `<tr><th>${sStrings.catColCategory}</th><th>${sStrings.catColCorrect}</th><th>${sStrings.catColQuestions}</th><th>${sStrings.catColPercent}</th></tr>`;
+  // Build category breakdown and exam review ONLY when an exam has finished
+  if (categoryReportEl) {
+    if (examFinished && categoryStats) {
+      let html = `<h3>${sStrings.catBreakdownTitle}</h3>`;
+      html += '<table class="cat-breakdown-table" cellspacing="0">';
+      html += `<tr><th>${sStrings.catColCategory}</th><th>${sStrings.catColCorrect}</th><th>${sStrings.catColQuestions}</th><th>${sStrings.catColPercent}</th></tr>`;
 
-    const catInfo = getCurrentCategoryInfo();
-    const weakDetails = [];
-    for (const code in catInfo) {
-      const st = categoryStats[code] || { correct: 0, total: 0 };
-      const pct = st.total > 0 ? Math.round((st.correct / st.total) * 100) : 0;
-      const labelObj = catInfo[code];
-      const label = labelObj ? (labelObj[currentLanguage] || labelObj.en) : code;
-      html += `<tr>
+      const catInfo = getCurrentCategoryInfo();
+      const weakDetails = [];
+
+      if (catInfo) {
+        for (const code in catInfo) {
+          const st = categoryStats[code] || { correct: 0, total: 0 };
+          const pct = st.total > 0 ? Math.round((st.correct / st.total) * 100) : 0;
+          const labelObj = catInfo[code];
+          const label = labelObj ? (labelObj[currentLanguage] || labelObj.en) : code;
+
+          html += `<tr>
 <td>${code} - ${label}</td>
 <td>${st.correct}</td>
 <td>${st.total}</td>
-<td>${pct}%</td>
+<td>
+  <div class="cat-progress-cell">
+    <div class="cat-progress-label">${pct}%</div>
+    <div class="cat-progress-outer">
+      <div class="cat-progress-inner" style="width:${pct}%;"></div>
+    </div>
+  </div>
+</td>
 </tr>`;
-      if (st.total > 0 && pct < 70) {
-        weakDetails.push({ code, label, pct });
+
+          if (st.total > 0 && pct < 70) {
+            weakDetails.push({ code, label, pct });
+          }
+        }
       }
-    }
 
-    html += '</table>';
+      html += '</table>';
 
-    // Weak areas summary and spotlight
-    if (weakDetails.length > 0) {
-      const listText = weakDetails
-        .map(w => `${w.code} - ${w.label} (${w.pct}%)`)
-        .join(', ');
-      html += `<p><strong>${sStrings.weakAreasTitle}:</strong> ${listText}</p>`;
+      // Weak areas summary and spotlight
+      if (weakDetails.length > 0) {
+        const listText = weakDetails
+          .map(w => `${w.code} - ${w.label} (${w.pct}%)`)
+          .join(', ');
+        html += `<p><strong>${sStrings.weakAreasTitle}:</strong> ${listText}</p>`;
 
-      // Spotlight with buttons
-      html += '<div id="weakAreasSpotlight">';
-      const badgePrefix = sStrings.weakBadgePrefix || '';
-      const btnLabel = sStrings.weakPracticeBtn || 'Practice only this category';
-      weakDetails.forEach(w => {
-        html += `<div class="weak-area-item">
+        html += '<div id="weakAreasSpotlight">';
+        const badgePrefix = sStrings.weakBadgePrefix || '';
+        const btnLabel = sStrings.weakPracticeBtn || 'Practice only this category';
+        weakDetails.forEach(w => {
+          html += `<div class="weak-area-item">
   <span class="weak-badge">❗ ${badgePrefix}${w.label} — ${w.pct}%</span>
   <button type="button" class="weak-practice-btn" data-cat="${w.code}">${btnLabel}</button>
 </div>`;
-      });
-      html += '</div>';
+        });
+        html += '</div>';
+      } else {
+        html += `<p><strong>${sStrings.weakAreasTitle}:</strong> ${sStrings.weakAreasNone}</p>`;
+      }
+
+      // Exam review summary: show each question and whether it was correct
+      if (selectionMode === 'exam' && questionSequence && questionSequence.length > 0) {
+        html += `<h4>${sStrings.examReviewTitle || 'Exam review'}</h4>`;
+        html += `<p>${sStrings.examReviewIntro || 'Summary of each question in this exam set:'}</p>`;
+        html += '<table class="cat-breakdown-table" cellspacing="0">';
+        html += `<tr><th>#</th><th>${sStrings.examReviewColQ || 'Question'}</th><th>${sStrings.examReviewColResult || 'Result'}</th></tr>`;
+
+        questionSequence.forEach((qIndex, idx) => {
+          const qObj = questions[qIndex];
+          if (!qObj) return;
+          const isWrong = wrongQuestionIndices && wrongQuestionIndices.has(qIndex);
+          const resultLabel = isWrong
+            ? (sStrings.examReviewResultIncorrect || 'Incorrect')
+            : (sStrings.examReviewResultCorrect || 'Correct');
+          const qText = (currentLanguage === 'fr' && qObj.question_fr)
+            ? qObj.question_fr
+            : (qObj.question_en || qObj.question);
+          const bankIdLabel = qObj.bankID && qObj.bankID.trim() !== ''
+            ? ` [${qObj.bankID}]`
+            : '';
+          html += `<tr>
+<td>${idx + 1}</td>
+<td>${qText}${bankIdLabel}</td>
+<td>${resultLabel}</td>
+</tr>`;
+        });
+
+        html += '</table>';
+      }
+
+      // Offer a retake-wrong-questions session
+      if (wrongQuestionIndices && wrongQuestionIndices.size > 0) {
+        const wrongCount = wrongQuestionIndices.size;
+        html += `<h4>${sStrings.retakeWrongTitle}</h4>`;
+        html += `<p>${sStrings.retakeWrongDesc}</p>`;
+        html += `<p>${wrongCount} question(s) were answered incorrectly in this exam.</p>`;
+        html += `<button type="button" id="retakeWrongBtn" class="btn-primary">${sStrings.retakeWrongBtn}</button>`;
+      }
+
+      categoryReportEl.innerHTML = html;
+      // Button behavior for weak areas and retake-wrong is handled
+      // by the global delegated click handler on categoryReportEl.
     } else {
-      html += `<p><strong>${sStrings.weakAreasTitle}:</strong> ${sStrings.weakAreasNone}</p>`;
+      // Not exam finished: clear category report in exam mode
+      if (selectionMode === 'exam') {
+        categoryReportEl.innerHTML = '';
+      }
     }
+  }
 
-    // Optionally offer a "retake wrong questions" exam built only from incorrect answers
-    if (wrongQuestionIndices && wrongQuestionIndices.size > 0) {
-      const wrongCount = wrongQuestionIndices.size;
-      html += `<h4>${sStrings.retakeWrongTitle}</h4>`;
-      html += `<p>${sStrings.retakeWrongDesc}</p>`;
-      html += `<p>${wrongCount} question(s) were answered incorrectly in this exam.</p>`;
-      html += `<button type="button" id="retakeWrongBtn">${sStrings.retakeWrongBtn}</button>`;
+  // Update main score label
+  scoreEl.textContent = message;
+
+  // Memory consolidation mini-report every 20 questions
+  const memEl = document.getElementById('memoryConsolidation');
+  if (memEl) {
+    if (totalAsked > 0 && totalAsked % 20 === 0) {
+      const catInfo = getCurrentCategoryInfo();
+      const weakSummaries = [];
+
+      if (categoryStats && catInfo) {
+        for (const code in catInfo) {
+          const st = categoryStats[code] || { correct: 0, total: 0 };
+          if (st.total === 0) continue;
+          const pct = Math.round((st.correct / st.total) * 100);
+          if (pct < 70) {
+            const labelObj = catInfo[code];
+            const label = labelObj ? (labelObj[currentLanguage] || labelObj.en) : code;
+            weakSummaries.push(`${code} - ${label} (${pct}%)`);
+          }
+        }
+      }
+
+      if (weakSummaries.length > 0) {
+        const heading = currentLanguage === 'fr'
+          ? 'Consolidation de la mémoire — zones à renforcer :'
+          : 'Memory consolidation — areas to reinforce:';
+        const intro = currentLanguage === 'fr'
+          ? `Vous avez répondu à ${totalAsked} questions. Concentrez-vous sur :`
+          : `You have answered ${totalAsked} questions. Focus on:`;
+        memEl.innerHTML = `<h4>${heading}</h4><p>${intro}</p><ul>` +
+          weakSummaries.map(w => `<li>${w}</li>`).join('') +
+          '</ul>';
+      } else {
+        const heading = currentLanguage === 'fr'
+          ? 'Consolidation de la mémoire'
+          : 'Memory consolidation';
+        const msg = currentLanguage === 'fr'
+          ? `Vous avez répondu à ${totalAsked} questions. Aucune zone faible claire pour le moment — continuez comme ça !`
+          : `You have answered ${totalAsked} questions. No clear weak areas yet — keep going!`;
+        memEl.innerHTML = `<h4>${heading}</h4><p>${msg}</p>`;
+      }
+    } else {
+      // Clear panel between checkpoints so it only appears at milestones
+      memEl.innerHTML = '';
     }
-
-    categoryReportEl.innerHTML = html;
-    attachWeakAreaHandlers();
-    attachRetakeWrongHandler();
-  }
-} else {
-  // Not exam finished: clear category report in exam mode
-  if (selectionMode === 'exam' && categoryReportEl) {
-    categoryReportEl.innerHTML = '';
   }
 }
-
-scoreEl.textContent = message;
-}
-}
-
-
 function resetFeedback() {
 feedbackEl.textContent = '';
 feedbackEl.className = '';
@@ -2127,6 +3030,21 @@ document.getElementById('mobileToggle').addEventListener('click',()=>{
   document.body.classList.toggle('mobile-mode', isMobileMode);
   const strings = UI_STRINGS[currentLanguage] || UI_STRINGS.en;
   document.getElementById('mobileToggle').textContent = isMobileMode ? strings.mobileOff : strings.mobileOn;
+});
+
+const fullscreenToggleEl = document.getElementById('fullscreenToggle');
+if (fullscreenToggleEl) {
+  fullscreenToggleEl.addEventListener('click', () => {
+    toggleFullscreen();
+  });
+}
+
+document.addEventListener('fullscreenchange', () => {
+  isFullScreen = !!(document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement);
+  const strings = UI_STRINGS[currentLanguage] || UI_STRINGS.en;
+  if (fullscreenToggleBtn && strings.fullScreenOn && strings.fullScreenOff) {
+    fullscreenToggleBtn.textContent = isFullScreen ? strings.fullScreenOff : strings.fullScreenOn;
+  }
 });
 
 // Global delegated click handler for category practice & retake-wrong actions
