@@ -3039,16 +3039,48 @@ function resetApp() {
     nextBtn.disabled = true;
   }
 
+  // Ensure mobile mode and fullscreen are fully turned off
+  try {
+    isMobileMode = false;
+    document.body.classList.remove('mobile-mode');
+  } catch (e) {}
+
+  try {
+    if (isFullScreen && document.exitFullscreen) {
+      document.exitFullscreen().catch(() => {});
+    }
+    isFullScreen = false;
+    document.body.classList.remove('fullscreen-mode');
+  } catch (e) {}
+
+  // Reset toggle button labels (mobile/fullscreen) to default
+  try {
+    const s = UI_STRINGS.en;
+    if (mobileToggleBtn && s.mobileOn) {
+      mobileToggleBtn.textContent = s.mobileOn;
+    }
+    if (fullscreenToggleBtn && s.fullScreenOn) {
+      fullscreenToggleBtn.textContent = s.fullScreenOn;
+    }
+  } catch (e) {}
+
   // Re-apply language strings (English baseline after reset)
   applyLanguage();
   clearSessionState();
 
-  // Scroll to very top (run at the end so it behaves on mobile & desktop)
+  // Scroll to very top (run at the end so it behaves on mobile & desktop, including iOS)
   try {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   } catch (e) {
     window.scrollTo(0, 0);
   }
+  try {
+    setTimeout(() => {
+      try {
+        window.scrollTo(0, 0);
+      } catch (e2) {}
+    }, 50);
+  } catch (e) {}
 }
 
 
