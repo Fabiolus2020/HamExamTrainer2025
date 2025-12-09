@@ -1,6 +1,6 @@
 # 📡 HAM Exam Trainer (Canada) — Bilingual Study App
 
-A free, offline-ready HTML tool to help you practice for the **Canadian Amateur Radio Basic and Advanced exams**.
+A free, offline-ready HTML tool to help you practice for the **Canadian Amateur Radio Basic and Advanced exams*.
 
 - 🇨🇦 Based on the official ISED question banks
 - 🇬🇧🇫🇷 Fully bilingual interface (English & French)
